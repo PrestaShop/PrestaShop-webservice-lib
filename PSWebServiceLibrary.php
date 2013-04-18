@@ -43,7 +43,7 @@ class PrestaShopWebservice
 	
 	/** @var array compatible versions of PrestaShop Webservice */
 	const psCompatibleVersionsMin = '1.4.0.17';
-	const psCompatibleVersionsMax = '1.5.3.1';
+	const psCompatibleVersionsMax = '1.5.4.1';
 	
 	/**
 	 * PrestaShopWebservice constructor. Throw an exception when CURL is not installed/activated
@@ -105,7 +105,7 @@ class PrestaShopWebservice
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLINFO_HEADER_OUT => TRUE,
 			CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
-			CURLOPT_USERPWD => $this->key.':',
+			CURLOPT_USERPWD => 'BQ8RCBCH53VSGNURI4B3U81SJ80IDMW1:',
 			CURLOPT_HTTPHEADER => array( 'Expect:' )
 		);
 		
