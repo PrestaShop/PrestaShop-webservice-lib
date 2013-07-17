@@ -166,7 +166,7 @@ class PrestaShopWebservice
 		if ($this->debug)
 		{
 			if ($curl_params[CURLOPT_CUSTOMREQUEST] == 'PUT' || $curl_params[CURLOPT_CUSTOMREQUEST] == 'POST')
-				$this->printDebug('XML SENT', $curl_params[CURLOPT_POSTFIELDS]);
+				$this->printDebug('XML SENT', urldecode($curl_params[CURLOPT_POSTFIELDS]));
 			if ($curl_params[CURLOPT_CUSTOMREQUEST] != 'DELETE' && $curl_params[CURLOPT_CUSTOMREQUEST] != 'HEAD')
 				$this->printDebug('RETURN HTTP BODY', $body);
 		}
