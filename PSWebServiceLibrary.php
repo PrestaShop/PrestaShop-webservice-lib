@@ -188,7 +188,11 @@ class PrestaShopWebservice
 			libxml_use_internal_errors(true);
 			$xml = simplexml_load_string($response);
 			if (libxml_get_errors())
-				throw new PrestaShopWebserviceException('HTTP XML response is not parsable : '.var_export(libxml_get_errors(), true));
+			{
+				$msg = var_export(libxml_get_errors(), true);
+				libxml_clear_errors();
+				throw new PrestaShopWebserviceException('HTTP XML response is not parsable: '.$msg);
+			}
 			return $xml;
 		}
 		else
