@@ -67,6 +67,7 @@ class PrestaShopWebservice
 	 * @param string $url Root URL for the shop
 	 * @param string $key Authentification key
 	 * @param mixed $debug Debug mode Activated (true) or deactivated (false)
+	 * @throws PrestaShopWebserviceException if curl is not loaded
 	*/
 	function __construct($url, $key, $debug = true) {
 		if (!extension_loaded('curl'))
@@ -80,6 +81,7 @@ class PrestaShopWebservice
 	/**
 	 * Take the status code and throw an exception if the server didn't return 200 or 201 code
 	 * @param int $status_code Status code of an HTTP return
+	 * @throws PrestaShopWebserviceException if HTTP status code is not 200 or 201
 	 */
 	protected function checkStatusCode($status_code)
 	{
@@ -96,7 +98,7 @@ class PrestaShopWebservice
 			default: throw new PrestaShopWebserviceException('This call to PrestaShop Web Services returned an unexpected HTTP status of:' . $status_code);
 		}
 	}
-	
+
 	/**
 	 * Provides default parameters for the curl connection(s)
 	 * @return array Default parameters for curl connection(s)
@@ -113,12 +115,14 @@ class PrestaShopWebservice
 		);
 		return $defaultParams;
 	}
-	
+
 	/**
 	 * Handles a CURL request to PrestaShop Webservice. Can throw exception.
 	 * @param string $url Resource name
 	 * @param mixed $curl_params CURL parameters (sent to curl_set_opt)
-	 * @return array status_code, response
+	 * @return array status_code, response, header
+     *
+     * @throws PrestaShopWebserviceException
 	 */
 	protected function executeRequest($url, $curl_params = array())
 	{
@@ -206,6 +210,7 @@ class PrestaShopWebservice
 	/**
 	 * Load XML from string. Can throw exception
 	 * @param string $response String from a CURL response
+	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
 	 */
 	protected function parseXML($response)
@@ -234,6 +239,7 @@ class PrestaShopWebservice
 	 * 'postXml' => Full XML string to add resource<br><br>
 	 * Examples are given in the tutorial</p>
 	 * @param array $options
+	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
 	 */
 	public function add($options)
@@ -258,7 +264,7 @@ class PrestaShopWebservice
 	}
 
 	/**
- 	 * Retrieve (GET) a resource
+	 * Retrieve (GET) a resource
 	 * <p>Unique parameter must take : <br><br>
 	 * 'url' => Full URL for a GET request of Webservice (ex: http://mystore.com/api/customers/1/)<br>
 	 * OR<br>
@@ -283,6 +289,7 @@ class PrestaShopWebservice
 	 * ?>
 	 * </code>
 	 * @param array $options Array representing resource to get.
+	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
 	 */
 	public function get($options)
@@ -314,9 +321,10 @@ class PrestaShopWebservice
 	}
 
 	/**
- 	 * Head method (HEAD) a resource
+	 * Head method (HEAD) a resource
 	 *
 	 * @param array $options Array representing resource for head request.
+	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
 	 */
 	public function head($options)
@@ -352,6 +360,8 @@ class PrestaShopWebservice
 	 * 'putXml' => Modified XML string of a resource<br><br>
 	 * Examples are given in the tutorial</p>
 	 * @param array $options Array representing resource to edit.
+	 * @throws PrestaShopWebserviceException
+	 * @return SimpleXMLElement
 	 */
 	public function edit($options)
 	{
@@ -397,20 +407,25 @@ class PrestaShopWebservice
 	 * ?>
 	 * </code>
 	 * @param array $options Array representing resource to delete.
+	 * @throws PrestaShopWebserviceException
+	 * @return bool
 	 */
 	public function delete($options)
 	{
 		if (isset($options['url']))
 			$url = $options['url'];
 		elseif (isset($options['resource']) && isset($options['id']))
-			if (is_array($options['id']))
-				$url = $this->url.'/api/'.$options['resource'].'/?id=['.implode(',', $options['id']).']';
-			else
-				$url = $this->url.'/api/'.$options['resource'].'/'.$options['id'];
+            $url = (is_array($options['id']))
+				? $this->url . '/api/' . $options['resource'] . '/?id=[' . implode(',', $options['id']) . ']'
+			    : $this->url . '/api/' . $options['resource'] . '/' . $options['id'];
+        else
+            throw new PrestaShopWebserviceException('Bad parameters given');
+
 		if (isset($options['id_shop']))
 			$url .= '&id_shop='.$options['id_shop'];
 		if (isset($options['id_group_shop']))
 			$url .= '&id_group_shop='.$options['id_group_shop'];
+
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
 		self::checkStatusCode($request['status_code']);// check the response validity
 		return true;
