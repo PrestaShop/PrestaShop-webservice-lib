@@ -34,17 +34,17 @@ class PrestaShopWebservice
 
 	/** @var string Shop URL */
 	protected $url;
-	
+
 	/** @var string Authentification key */
 	protected $key;
-	
+
 	/** @var boolean is debug activated */
 	protected $debug;
-	
+
 	/** @var array compatible versions of PrestaShop Webservice */
 	const psCompatibleVersionsMin = '1.4.0.17';
 	const psCompatibleVersionsMax = '1.6.0.5';
-	
+
 	/**
 	 * PrestaShopWebservice constructor. Throw an exception when CURL is not installed/activated
 	 * <code>
@@ -64,6 +64,7 @@ class PrestaShopWebservice
 	 * @param string $url Root URL for the shop
 	 * @param string $key Authentification key
 	 * @param mixed $debug Debug mode Activated (true) or deactivated (false)
+	 * @throws PrestaShopWebserviceException if curl is not loaded
 	*/
 	function __construct($url, $key, $debug = true) {
 		if (!extension_loaded('curl'))
@@ -72,10 +73,11 @@ class PrestaShopWebservice
 		$this->key = $key;
 		$this->debug = $debug;
 	}
-	
+
 	/**
 	 * Take the status code and throw an exception if the server didn't return 200 or 201 code
 	 * @param int $status_code Status code of an HTTP return
+	 * @throws PrestaShopWebserviceException if HTTP status code is not 200 or 201
 	 */
 	protected function checkStatusCode($status_code)
 	{
@@ -96,7 +98,8 @@ class PrestaShopWebservice
 	 * Handles a CURL request to PrestaShop Webservice. Can throw exception.
 	 * @param string $url Resource name
 	 * @param mixed $curl_params CURL parameters (sent to curl_set_opt)
-	 * @return array status_code, response
+	 * @throws PrestaShopWebserviceException
+	 * @return array status_code, response, header
 	 */
 	protected function executeRequest($url, $curl_params = array())
 	{
@@ -108,7 +111,7 @@ class PrestaShopWebservice
 			CURLOPT_USERPWD => $this->key.':',
 			CURLOPT_HTTPHEADER => array( 'Expect:' )
 		);
-		
+
 		$session = curl_init($url);
 
 		$curl_options = array();
@@ -129,12 +132,12 @@ class PrestaShopWebservice
 		$index = strpos($response, "\r\n\r\n");
 		if ($index === false && $curl_params[CURLOPT_CUSTOMREQUEST] != 'HEAD')
 			throw new PrestaShopWebserviceException('Bad HTTP response');
-		
+
 		$header = substr($response, 0, $index);
 		$body = substr($response, $index + 4);
-		
+
 		$headerArrayTmp = explode("\n", $header);
-		
+
 		$headerArray = array();
 		foreach ($headerArrayTmp as &$headerItem)
 		{
@@ -143,7 +146,7 @@ class PrestaShopWebservice
 			if (count($tmp) == 2)
 				$headerArray[$tmp[0]] = $tmp[1];
 		}
-		
+
 		if (array_key_exists('PSWS-Version', $headerArray))
 		{
 			if (
@@ -152,12 +155,12 @@ class PrestaShopWebservice
 			)
 			throw new PrestaShopWebserviceException('This library is not compatible with this version of PrestaShop. Please upgrade/downgrade this library');
 		}
-		
+
 		if ($this->debug)
 		{
 			$this->printDebug('HTTP REQUEST HEADER', curl_getinfo($session, CURLINFO_HEADER_OUT));
 			$this->printDebug('HTTP RESPONSE HEADER', $header);
-			
+
 		}
 		$status_code = curl_getinfo($session, CURLINFO_HTTP_CODE);
 		if ($status_code === 0)
@@ -179,6 +182,7 @@ class PrestaShopWebservice
 	/**
 	 * Load XML from string. Can throw exception
 	 * @param string $response String from a CURL response
+	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
 	 */
 	protected function parseXML($response)
@@ -198,7 +202,7 @@ class PrestaShopWebservice
 		else
 			throw new PrestaShopWebserviceException('HTTP response is empty');
 	}
-	
+
 	/**
 	 * Add (POST) a resource
 	 * <p>Unique parameter must take : <br><br>
@@ -206,6 +210,7 @@ class PrestaShopWebservice
 	 * 'postXml' => Full XML string to add resource<br><br>
 	 * Examples are given in the tutorial</p>
 	 * @param array $options
+	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
 	 */
 	public function add($options)
@@ -226,7 +231,7 @@ class PrestaShopWebservice
 	}
 
 	/**
- 	 * Retrieve (GET) a resource
+	 * Retrieve (GET) a resource
 	 * <p>Unique parameter must take : <br><br>
 	 * 'url' => Full URL for a GET request of Webservice (ex: http://mystore.com/api/customers/1/)<br>
 	 * OR<br>
@@ -251,6 +256,7 @@ class PrestaShopWebservice
 	 * ?>
 	 * </code>
 	 * @param array $options Array representing resource to get.
+	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
 	 */
 	public function get($options)
@@ -263,7 +269,7 @@ class PrestaShopWebservice
 			$url_params = array();
 			if (isset($options['id']))
 				$url .= '/'.$options['id'];
-				
+
 			$params = array('filter', 'display', 'sort', 'limit');
 			foreach ($params as $p)
 				foreach ($options as $k => $o)
@@ -274,17 +280,18 @@ class PrestaShopWebservice
 		}
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');
-		
+
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
-		
+
 		self::checkStatusCode($request['status_code']);// check the response validity
 		return self::parseXML($request['response']);
 	}
 
 	/**
- 	 * Head method (HEAD) a resource
+	 * Head method (HEAD) a resource
 	 *
 	 * @param array $options Array representing resource for head request.
+	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
 	 */
 	public function head($options)
@@ -297,7 +304,7 @@ class PrestaShopWebservice
 			$url_params = array();
 			if (isset($options['id']))
 				$url .= '/'.$options['id'];
-				
+
 			$params = array('filter', 'display', 'sort', 'limit');
 			foreach ($params as $p)
 				foreach ($options as $k => $o)
@@ -320,6 +327,8 @@ class PrestaShopWebservice
 	 * 'putXml' => Modified XML string of a resource<br><br>
 	 * Examples are given in the tutorial</p>
 	 * @param array $options Array representing resource to edit.
+	 * @throws PrestaShopWebserviceException
+	 * @return SimpleXMLElement
 	 */
 	public function edit($options)
 	{
@@ -333,7 +342,7 @@ class PrestaShopWebservice
 		}
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');
-		
+
 		$request = self::executeRequest($url,  array(CURLOPT_CUSTOMREQUEST => 'PUT', CURLOPT_POSTFIELDS => $xml));
 		self::checkStatusCode($request['status_code']);// check the response validity
 		return self::parseXML($request['response']);
@@ -361,21 +370,25 @@ class PrestaShopWebservice
 	 * ?>
 	 * </code>
 	 * @param array $options Array representing resource to delete.
+	 * @throws PrestaShopWebserviceException
+	 * @return bool
 	 */
 	public function delete($options)
 	{
 		if (isset($options['url']))
 			$url = $options['url'];
 		elseif (isset($options['resource']) && isset($options['id']))
-			if (is_array($options['id']))
-				$url = $this->url.'/api/'.$options['resource'].'/?id=['.implode(',', $options['id']).']';
-			else
-				$url = $this->url.'/api/'.$options['resource'].'/'.$options['id'];
+			$url = is_array($options['id'])
+				? $this->url . '/api/' . $options['resource'] . '/?id=[' . implode(',', $options['id']) . ']'
+				: $this->url . '/api/' . $options['resource'] . '/' . $options['id'];
+		else
+			throw new PrestaShopWebserviceException('Bad parameters given');
+
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
 		self::checkStatusCode($request['status_code']);// check the response validity
 		return true;
 	}
-	
+
 
 }
 
