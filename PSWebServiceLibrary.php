@@ -264,7 +264,7 @@ class PrestaShopWebservice
 			if (isset($options['id']))
 				$url .= '/'.$options['id'];
 				
-			$params = array('filter', 'display', 'sort', 'limit');
+			$params = array('filter', 'display', 'sort', 'limit', 'date');
 			foreach ($params as $p)
 				foreach ($options as $k => $o)
 					if (strpos($k, $p) !== false)
@@ -298,7 +298,7 @@ class PrestaShopWebservice
 			if (isset($options['id']))
 				$url .= '/'.$options['id'];
 				
-			$params = array('filter', 'display', 'sort', 'limit');
+			$params = array('filter', 'display', 'sort', 'limit', 'date');
 			foreach ($params as $p)
 				foreach ($options as $k => $o)
 					if (strpos($k, $p) !== false)
