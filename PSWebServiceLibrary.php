@@ -43,7 +43,7 @@ class PrestaShopWebservice
 	
 	/** @var array compatible versions of PrestaShop Webservice */
 	const psCompatibleVersionsMin = '1.4.0.17';
-	const psCompatibleVersionsMax = '1.6.0.5';
+	const psCompatibleVersionsMax = '1.6.0.9';
 	
 	/**
 	 * PrestaShopWebservice constructor. Throw an exception when CURL is not installed/activated
@@ -219,7 +219,7 @@ class PrestaShopWebservice
 		}
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');
-		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'POST', CURLOPT_POSTFIELDS => 'xml='.urlencode($xml)));
+		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'POST', CURLOPT_POSTFIELDS => $xml));
 
 		self::checkStatusCode($request['status_code']);
 		return self::parseXML($request['response']);
