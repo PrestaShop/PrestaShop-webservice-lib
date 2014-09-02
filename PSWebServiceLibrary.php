@@ -41,9 +41,12 @@ class PrestaShopWebservice
 	/** @var boolean is debug activated */
 	protected $debug;
 	
+	/** @var string PS version */
+	protected $version;
+
 	/** @var array compatible versions of PrestaShop Webservice */
-	const psCompatibleVersionsMin = '1.4.0.17';
-	const psCompatibleVersionsMax = '1.6.0.5';
+	const psCompatibleVersionsMin = '1.4.0.0';
+	const psCompatibleVersionsMax = '1.6.0.9';
 	
 	/**
 	 * PrestaShopWebservice constructor. Throw an exception when CURL is not installed/activated
@@ -71,6 +74,7 @@ class PrestaShopWebservice
 		$this->url = $url;
 		$this->key = $key;
 		$this->debug = $debug;
+		$this->version = 'unknown';
 	}
 	
 	/**
@@ -146,6 +150,7 @@ class PrestaShopWebservice
 		
 		if (array_key_exists('PSWS-Version', $headerArray))
 		{
+			$this->version = $headerArray['PSWS-Version'];
 			if (
 				version_compare(PrestaShopWebservice::psCompatibleVersionsMin, $headerArray['PSWS-Version']) == 1 ||
 				version_compare(PrestaShopWebservice::psCompatibleVersionsMax, $headerArray['PSWS-Version']) == -1
@@ -172,10 +177,17 @@ class PrestaShopWebservice
 		}
 		return array('status_code' => $status_code, 'response' => $body, 'header' => $header);
 	}
+
 	public function printDebug($title, $content)
 	{
 		echo '<div style="display:table;background:#CCC;font-size:8pt;padding:7px"><h6 style="font-size:9pt;margin:0">'.$title.'</h6><pre>'.htmlentities($content).'</pre></div>';
 	}
+
+	public function getVersion()
+	{
+		return $this->version;
+	}
+
 	/**
 	 * Load XML from string. Can throw exception
 	 * @param string $response String from a CURL response
@@ -219,7 +231,7 @@ class PrestaShopWebservice
 		}
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');
-		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'POST', CURLOPT_POSTFIELDS => 'xml='.urlencode($xml)));
+		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'POST', CURLOPT_POSTFIELDS => $xml));
 
 		self::checkStatusCode($request['status_code']);
 		return self::parseXML($request['response']);
