@@ -228,6 +228,10 @@ class PrestaShopWebservice
 		{
 			$url = (isset($options['resource']) ? $this->url.'/api/'.$options['resource'] : $options['url']);
 			$xml = $options['postXml'];
+			if (isset($options['id_shop']))
+				$url .= '&id_shop='.$options['id_shop'];
+			if (isset($options['id_group_shop']))
+				$url .= '&id_group_shop='.$options['id_group_shop'];
 		}
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');
@@ -276,7 +280,7 @@ class PrestaShopWebservice
 			if (isset($options['id']))
 				$url .= '/'.$options['id'];
 				
-			$params = array('filter', 'display', 'sort', 'limit');
+			$params = array('filter', 'display', 'sort', 'limit', 'id_shop', 'id_group_shop');
 			foreach ($params as $p)
 				foreach ($options as $k => $o)
 					if (strpos($k, $p) !== false)
@@ -342,6 +346,10 @@ class PrestaShopWebservice
 		{
 			$url = (isset($options['url']) ? $options['url'] : $this->url.'/api/'.$options['resource'].'/'.$options['id']);
 			$xml = $options['putXml'];
+			if (isset($options['id_shop']))
+				$url .= '&id_shop='.$options['id_shop'];
+			if (isset($options['id_group_shop']))
+				$url .= '&id_group_shop='.$options['id_group_shop'];
 		}
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');
@@ -383,6 +391,10 @@ class PrestaShopWebservice
 				$url = $this->url.'/api/'.$options['resource'].'/?id=['.implode(',', $options['id']).']';
 			else
 				$url = $this->url.'/api/'.$options['resource'].'/'.$options['id'];
+		if (isset($options['id_shop']))
+			$url .= '&id_shop='.$options['id_shop'];
+		if (isset($options['id_group_shop']))
+			$url .= '&id_group_shop='.$options['id_group_shop'];
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
 		self::checkStatusCode($request['status_code']);// check the response validity
 		return true;
