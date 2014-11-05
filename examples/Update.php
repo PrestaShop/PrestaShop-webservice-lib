@@ -41,7 +41,7 @@ try
 	if (isset($_GET['id']))
 		$opt['id'] = $_GET['id'];
 	$xml = $webService->get($opt);
-	
+
 	// Here we get the elements from children of customer markup which is children of prestashop root markup
 	$resources = $xml->children()->children();
 }
@@ -51,7 +51,7 @@ catch (PrestaShopWebserviceException $e)
 	$trace = $e->getTrace();
 	if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 	else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-	else echo 'Other error';
+	else echo 'Other error<br />'.$e->getMessage();
 }
 
 // Second : We update the data and send it to the web service
@@ -91,7 +91,7 @@ else echo 'List';
 echo '</h1>';
 
 // We set a link to go back to list if we are in customer's details
-if (isset($_GET['id'])) 
+if (isset($_GET['id']))
 	echo '<a href="?">Return to the list</a>';
 
 if (isset($_GET['id']))

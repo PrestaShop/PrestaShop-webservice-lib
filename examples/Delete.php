@@ -36,12 +36,12 @@ require_once('./PSWebServiceLibrary.php');
 if (isset($_GET['DeleteID']))
 {
 	//Deletion
-	
+
 	echo '<h1>Customers Deletion</h1><br>';
-	
+
 	// We set a link to go back to list
 	echo '<a href="?">Return to the list</a>';
-	
+
 	try
 	{
 		$webService = new PrestaShopWebservice(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
@@ -56,7 +56,7 @@ if (isset($_GET['DeleteID']))
 		$trace = $e->getTrace();
 		if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 		else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-		else echo 'Other error';
+		else echo 'Other error<br />'.$e->getMessage();
 	}
 }
 else
