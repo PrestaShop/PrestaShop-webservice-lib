@@ -55,19 +55,19 @@ catch (PrestaShopWebserviceException $e)
 	$trace = $e->getTrace();
 	if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 	else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-	else echo 'Other error';
+	else echo 'Other error<br />'.$e->getMessage();
 }
 
 // We set the Title
 echo '<h1>Customers ';
-if (isset($_GET['id'])) 
+if (isset($_GET['id']))
 	echo 'Details';
-else 
+else
 	echo 'List';
 echo '</h1>';
 
 // We set a link to go back to list if we are in customer's details
-if (isset($_GET['id'])) 
+if (isset($_GET['id']))
 	echo '<a href="?">Return to the list</a>';
 
 echo '<table border="5">';

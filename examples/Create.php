@@ -50,7 +50,7 @@ catch (PrestaShopWebserviceException $e)
 	$trace = $e->getTrace();
 	if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 	else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-	else echo 'Other error';
+	else echo 'Other error<br />'.$e->getMessage();
 }
 
 if (count($_POST) > 0)
