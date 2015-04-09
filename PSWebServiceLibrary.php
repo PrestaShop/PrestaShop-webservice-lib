@@ -46,7 +46,7 @@ class PrestaShopWebservice
 
 	/** @var array compatible versions of PrestaShop Webservice */
 	const psCompatibleVersionsMin = '1.4.0.0';
-	const psCompatibleVersionsMax = '1.6.0.14';
+	const psCompatibleVersionsMax = '1.6.0.11';
 	
 	/**
 	 * PrestaShopWebservice constructor. Throw an exception when CURL is not installed/activated
@@ -87,12 +87,12 @@ class PrestaShopWebservice
 		switch($status_code)
 		{
 			case 200:	case 201:	break;
-			case 204: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'No content'), '204');break;
-			case 400: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Bad Request'), '400');break;
-			case 401: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Unauthorized'), '401');break;
-			case 404: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Not Found'), '404');break;
-			case 405: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Method Not Allowed'), '405');break;
-			case 500: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Internal Server Error'), '500');break;
+			case 204: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'No content'));break;
+			case 400: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Bad Request'));break;
+			case 401: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Unauthorized'));break;
+			case 404: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Not Found'));break;
+			case 405: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Method Not Allowed'));break;
+			case 500: throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Internal Server Error'));break;
 			default: throw new PrestaShopWebserviceException('This call to PrestaShop Web Services returned an unexpected HTTP status of:' . $status_code);
 		}
 	}
