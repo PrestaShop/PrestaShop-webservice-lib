@@ -271,6 +271,7 @@ class PrestaShopWebservice
 	 * @return SimpleXMLElement status_code, response
 	 */
 	public function get($options) {
+		$options['output_format'] = 'XML';
 		return self::parseXML(self::getRawResponse($options));
 	}
 
