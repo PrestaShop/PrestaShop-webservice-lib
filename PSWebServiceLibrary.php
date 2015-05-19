@@ -270,32 +270,56 @@ class PrestaShopWebservice
 	 * @param array $options Array representing resource to get.
 	 * @return SimpleXMLElement status_code, response
 	 */
-	public function get($options)
-	{
-		if (isset($options['url']))
+	public function get($options) {
+		return self::parseXML(self::getRawResponse($options));
+	}
+
+	/**
+	 * get response as JSON
+     * @param array $options
+     * @return string
+     */
+	public function getJson($options) {
+        $options['output_format'] = 'JSON';
+        return self::getRawResponse($options);
+    }
+
+    /**
+     * @param array $options
+     * @return string
+     * @throws PrestaShopWebserviceException
+     */
+	private function getRawResponse() {
+        if (isset($options['url'])) {
 			$url = $options['url'];
-		elseif (isset($options['resource']))
-		{
+        }
+		elseif (isset($options['resource'])) {
 			$url = $this->url.'/api/'.$options['resource'];
 			$url_params = array();
-			if (isset($options['id']))
+			if (isset($options['id'])) {
 				$url .= '/'.$options['id'];
+			}
 				
-			$params = array('filter', 'display', 'sort', 'limit', 'id_shop', 'id_group_shop');
-			foreach ($params as $p)
-				foreach ($options as $k => $o)
-					if (strpos($k, $p) !== false)
+			$params = array('filter', 'display', 'sort', 'limit', 'id_shop', 'id_group_shop', 'output_format');
+			foreach ($params as $p) {
+				foreach ($options as $k => $o) {
+				    if (strpos($k, $p) !== false) {
 						$url_params[$k] = $options[$k];
-			if (count($url_params) > 0)
+				    }
+				}
+			}
+			if (count($url_params) > 0) {
 				$url .= '?'.http_build_query($url_params);
+			}
 		}
-		else
+		else {
 			throw new PrestaShopWebserviceException('Bad parameters given');
+		}
 		
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
 		
 		self::checkStatusCode($request['status_code']);// check the response validity
-		return self::parseXML($request['response']);
+		$request['response'];
 	}
 
 	/**
