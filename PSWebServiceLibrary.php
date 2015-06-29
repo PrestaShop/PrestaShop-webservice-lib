@@ -239,7 +239,11 @@ class PrestaShopWebservice
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'POST', CURLOPT_POSTFIELDS => $xml));
 
 		self::checkStatusCode($request['status_code']);
-		return self::parseXML($request['response']);
+		try {
+                	return self::parseXML($request['response']);
+            	} catch (PrestaShopWebserviceException $e) {
+                	throw new PrestaShopWebserviceException( $e->getMessage());
+            	}
 	}
 
 	/**
@@ -295,7 +299,11 @@ class PrestaShopWebservice
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
 		
 		self::checkStatusCode($request['status_code']);// check the response validity
-		return self::parseXML($request['response']);
+		try {
+                	return self::parseXML($request['response']);
+            	} catch (PrestaShopWebserviceException $e) {
+                	throw new PrestaShopWebserviceException( $e->getMessage());
+            	}
 	}
 
 	/**
@@ -357,7 +365,11 @@ class PrestaShopWebservice
 		
 		$request = self::executeRequest($url,  array(CURLOPT_CUSTOMREQUEST => 'PUT', CURLOPT_POSTFIELDS => $xml));
 		self::checkStatusCode($request['status_code']);// check the response validity
-		return self::parseXML($request['response']);
+		try {
+                	return self::parseXML($request['response']);
+            	} catch (PrestaShopWebserviceException $e) {
+                	throw new PrestaShopWebserviceException( $e->getMessage());
+            	}
 	}
 
 	/**
