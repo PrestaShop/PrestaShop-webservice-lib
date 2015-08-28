@@ -8,5 +8,12 @@
             "email": "contact@prestashop.com"
         }
     ],
-    "require": {}
+    "autoload": {
+        "classmap": ["PSWebServiceLibrary.php"]
+    },
+    "minimum-stability": "dev-master",
+    "require": {
+        "php": ">= 5.3.0",
+        "ext-curl": "*"
+    }
 }
