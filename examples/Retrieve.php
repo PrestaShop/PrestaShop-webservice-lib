@@ -28,10 +28,10 @@
 */
 
 // Here we define constants /!\ You need to replace this parameters
+use PrestaShop\WebService;
 define('DEBUG', true);											// Debug mode
 define('PS_SHOP_PATH', 'http://www.myshop.com/');							// Root path of your PrestaShop store
 define('PS_WS_AUTH_KEY', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ');	// Auth key (Get it in your Back Office)
-require_once('./PSWebServiceLibrary.php');
 
 // Here we make the WebService Call
 try
@@ -49,7 +49,7 @@ try
 	// Here we get the elements from children of customer markup which is children of prestashop root markup
 	$resources = $xml->children()->children();
 }
-catch (PrestaShopWebserviceException $e)
+catch (\PrestaShop\WebServiceException $e)
 {
 	// Here we are dealing with errors
 	$trace = $e->getTrace();

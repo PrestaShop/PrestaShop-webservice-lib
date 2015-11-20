@@ -28,10 +28,10 @@
 */
 
 // Here we define constants /!\ You need to replace this parameters
+use PrestaShop\WebService;
 define('DEBUG', true);
 define('PS_SHOP_PATH', 'http://www.myshop.com/');
 define('PS_WS_AUTH_KEY', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ');
-require_once('./PSWebServiceLibrary.php');
 
 if (isset($_GET['DeleteID']))
 {
@@ -44,13 +44,13 @@ if (isset($_GET['DeleteID']))
 
 	try
 	{
-		$webService = new PrestaShopWebservice(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
+		$webService = new WebService(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
 		// Call for a deletion, we specify the resource name and the id of the resource in order to delete the item
 		$webService->delete(array('resource' => 'customers', 'id' => intval($_GET['DeleteID'])));
 		// If there's an error we throw an exception
 		echo 'Successfully deleted !<meta http-equiv="refresh" content="5"/>';
 	}
-	catch (PrestaShopWebserviceException $e)
+	catch (\PrestaShop\WebServiceException $e)
 	{
 		// Here we are dealing with errors
 		$trace = $e->getTrace();
@@ -64,12 +64,12 @@ else
 	// Else get customers list
 	try
 	{
-		$webService = new PrestaShopWebservice(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
+		$webService = new WebService(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
 		$opt = array('resource' => 'customers');
 		$xml = $webService->get($opt);
 		$resources = $xml->children()->children();
 	}
-	catch (PrestaShopWebserviceException $e)
+	catch (\PrestaShop\WebServiceException $e)
 	{
 		// Here we are dealing with errors
 		$trace = $e->getTrace();

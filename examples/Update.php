@@ -28,10 +28,10 @@
 */
 
 // Here we define constants /!\ You need to replace this parameters
+use PrestaShop\WebService;
 define('DEBUG', true);
 define('PS_SHOP_PATH', 'http://www.myshop.com/');
 define('PS_WS_AUTH_KEY', 'VIVELADIVISIONMOBILEDEPRESTASHOP');
-require_once('./PSWebServiceLibrary.php');
 
 // First : We always get the customer's list or a specific one
 try
@@ -45,7 +45,7 @@ try
 	// Here we get the elements from children of customer markup which is children of prestashop root markup
 	$resources = $xml->children()->children();
 }
-catch (PrestaShopWebserviceException $e)
+catch (\PrestaShop\WebServiceException $e)
 {
 	// Here we are dealing with errors
 	$trace = $e->getTrace();
@@ -72,7 +72,7 @@ if (isset($_GET['id']) && isset($_POST['id'])) // Here we check id cause in ever
 		// if WebService don't throw an exception the action worked well and we don't show the following message
 		echo "Successfully updated.";
 	}
-	catch (PrestaShopWebserviceException $ex)
+	catch (\PrestaShop\WebServiceException $ex)
 	{
 		// Here we are dealing with errors
 		$trace = $ex->getTrace();

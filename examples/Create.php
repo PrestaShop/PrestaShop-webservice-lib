@@ -28,15 +28,15 @@
 */
 
 // Here we define constants /!\ You need to replace this parameters
+use PrestaShop\WebService;
 define('DEBUG', true);
 define('PS_SHOP_PATH', 'http://www.myshop.com/');
 define('PS_WS_AUTH_KEY', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ');
-require_once('./PSWebServiceLibrary.php');
 
 // Here we use the WebService to get the schema of "customers" resource
 try
 {
-	$webService = new PrestaShopWebservice(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
+	$webService = new WebService(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
 	$opt = array('resource' => 'customers');
 	if (isset($_GET['Create']))
 		$xml = $webService->get(array('url' => PS_SHOP_PATH.'/api/customers?schema=blank'));
@@ -44,7 +44,7 @@ try
 		$xml = $webService->get($opt);
 	$resources = $xml->children()->children();
 }
-catch (PrestaShopWebserviceException $e)
+catch (\PrestaShop\WebServiceException $e)
 {
 	// Here we are dealing with errors
 	$trace = $e->getTrace();
@@ -70,7 +70,7 @@ if (count($_POST) > 0)
 			echo "Successfully added.";
 		}
 	}
-	catch (PrestaShopWebserviceException $ex)
+	catch (\PrestaShop\WebServiceException $ex)
 	{
 		// Here we are dealing with errors
 		$trace = $ex->getTrace();

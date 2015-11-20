@@ -28,15 +28,15 @@
 */
 
 // Here we define constants /!\ You need to replace this parameters
+use PrestaShop\WebService;
 define('DEBUG', true);											// Debug mode
 define('PS_SHOP_PATH', 'http://www.myshop.com/');		// Root path of your PrestaShop store
 define('PS_WS_AUTH_KEY', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ');	// Auth key (Get it in your Back Office)
-require_once('./PSWebServiceLibrary.php');
 
 // Here we make the WebService Call
 try
 {
-	$webService = new PrestaShopWebservice(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
+	$webService = new WebService(PS_SHOP_PATH, PS_WS_AUTH_KEY, DEBUG);
 	
 	// Here we set the option array for the Webservice : we want customers resources
 	$opt['resource'] = 'customers';
@@ -47,7 +47,7 @@ try
 	// Here we get the elements from children of customers markup "customer"
 	$resources = $xml->customers->children();
 }
-catch (PrestaShopWebserviceException $e)
+catch (\PrestaShop\WebServiceException $e)
 {
 	// Here we are dealing with errors
 	$trace = $e->getTrace();
