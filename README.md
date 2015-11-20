@@ -1,5 +1,6 @@
 # PrestaShop-webservice-lib
 PHP library for PrestaShop Webservices
+
 ## Install 
 ### from composer
 ```bash
@@ -14,3 +15,4 @@ $key = 'XXXXXXXXX';
 $debug = true;
 $webService = new WebService($url, $key, $debug);
 ```
+See examples folder for more usage examples.
