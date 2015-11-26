@@ -26,9 +26,9 @@
  * @package PrestaShopWebservice
  */
 
-namespace PrestaShop;
+namespace WIC\PrestaShop;
 
-use PrestaShop\WebServiceException;
+use WIC\PrestaShop\WebServiceException;
 
 /**
  * @package PrestaShopWebService
