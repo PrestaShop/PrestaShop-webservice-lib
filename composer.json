@@ -1,8 +1,12 @@
 {
-    "name": "prestashop/prestashop-webservice-lib",
+    "name": "wic/prestashop-webservice-lib",
     "description": "PrestaShop Webservice access library",
     "license": "OSL-3.0",
     "authors": [
+        {
+            "name": "Web In Color",
+            "email": "contact@webincolor.fr"
+        },
         {
             "name": "PrestaShop SA",
             "email": "contact@prestashop.com"
@@ -10,7 +14,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "PrestaShop\\": "lib/"
+            "WIC\\PrestaShop\\": "lib/"
         }
     },
     "minimum-stability": "stable",
