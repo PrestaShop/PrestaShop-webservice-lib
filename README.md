@@ -1,15 +1,15 @@
 # PrestaShop-webservice-lib
 PHP library for PrestaShop Webservices
 
-## Install 
+## Install
 ### from composer
 ```bash
-composer require prestashop/prestashop-webservice-lib
+composer require wic/prestashop-webservice-lib
 ```
 
 ## Usage
 ```php
-use PrestaShop\WebService;
+use WIC\PrestaShop\WebService;
 $url = 'http://prestashop.url';
 $key = 'XXXXXXXXX';
 $debug = true;
