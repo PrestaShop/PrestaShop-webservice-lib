@@ -394,8 +394,7 @@ class WebService
     public function getSchema($resource)
     {
         $url = sprintf('%s/api/%s?schema=blank', $this->url, strtolower($resource));
-        $xml = $this->get(array('url' => $url));
-        return $xml->children();
+        return $this->get(array('url' => $url));
     }
 
 }
