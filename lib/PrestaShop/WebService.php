@@ -48,10 +48,6 @@ class WebService
     /** @var string PS version */
     protected $version;
 
-    /** @var array compatible versions of PrestaShop Webservice */
-    const psCompatibleVersionsMin = '1.4.0.0';
-    const psCompatibleVersionsMax = '1.6.1.3';
-
     /**
      * WebService constructor. Throw an exception when CURL is not installed/activated
      * <code>
@@ -75,7 +71,7 @@ class WebService
     function __construct($url, $key, $debug = true) {
         if (!extension_loaded('curl'))
             throw new WebServiceException('Please activate the PHP extension \'curl\' to allow use of PrestaShop webservice library');
-        $this->url = $url;
+        $this->url = preg_replace('/\/$/', '', $url);;
         $this->key = $key;
         $this->debug = $debug;
         $this->version = 'unknown';
@@ -139,7 +135,7 @@ class WebService
 
         $index = strpos($response, "\r\n\r\n");
         if ($index === false && $curl_params[CURLOPT_CUSTOMREQUEST] != 'HEAD')
-            throw new WebServiceException('Bad HTTP response');
+            throw new WebServiceException('Bad HTTP response:'.$response);
 
         $header = substr($response, 0, $index);
         $body = substr($response, $index + 4);
@@ -156,11 +152,6 @@ class WebService
 
         if (array_key_exists('PSWS-Version', $headerArray)) {
             $this->version = $headerArray['PSWS-Version'];
-            if (
-                version_compare(WebService::psCompatibleVersionsMin, $headerArray['PSWS-Version']) == 1 ||
-                version_compare(WebService::psCompatibleVersionsMax, $headerArray['PSWS-Version']) == -1
-            )
-                throw new WebServiceException('This library is not compatible with this version of PrestaShop. Please upgrade/downgrade this library');
         }
 
         if ($this->debug) {
@@ -395,6 +386,11 @@ class WebService
     {
         $url = sprintf('%s/api/%s?schema=blank', $this->url, strtolower($resource));
         return $this->get(array('url' => $url));
+    }
+
+    public function isPrestaShop16()
+    {
+        return version_compare($this->version, '1.6.0.0', '>=');
     }
 
 }
