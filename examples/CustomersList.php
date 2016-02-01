@@ -1,7 +1,7 @@
 <html><head><title>CRUD Tutorial - Customer's list</title></head><body>
 <?php
 /*
-* 2007-2013 PrestaShop
+* 2007-2016 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -20,7 +20,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2013 PrestaShop SA
+*  @copyright  2007-2016 PrestaShop SA
 *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 * PrestaShop Webservice Library
@@ -28,7 +28,7 @@
 */
 
 // Here we define constants /!\ You need to replace this parameters
-define('DEBUG', true);											// Debug mode
+define('DEBUG', true);						// Debug mode
 define('PS_SHOP_PATH', 'http://www.myshop.com/');		// Root path of your PrestaShop store
 define('PS_WS_AUTH_KEY', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ');	// Auth key (Get it in your Back Office)
 require_once('./PSWebServiceLibrary.php');
@@ -55,6 +55,8 @@ catch (PrestaShopWebserviceException $e)
 	else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
 	else echo 'Other error';
 }
+
+// UI
 
 // We set the Title
 echo "<h1>Customer's List</h1>";
