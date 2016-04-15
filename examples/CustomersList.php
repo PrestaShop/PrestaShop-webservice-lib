@@ -31,7 +31,7 @@
 define('DEBUG', true);											// Debug mode
 define('PS_SHOP_PATH', 'http://www.myshop.com/');		// Root path of your PrestaShop store
 define('PS_WS_AUTH_KEY', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ');	// Auth key (Get it in your Back Office)
-require_once('./PSWebServiceLibrary.php');
+require_once('../PSWebServiceLibrary.php');
 
 // Here we make the WebService Call
 try

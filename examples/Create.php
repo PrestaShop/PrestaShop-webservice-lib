@@ -31,7 +31,7 @@
 define('DEBUG', true);
 define('PS_SHOP_PATH', 'http://www.myshop.com/');
 define('PS_WS_AUTH_KEY', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ');
-require_once('./PSWebServiceLibrary.php');
+require_once('../PSWebServiceLibrary.php');
 
 // Here we use the WebService to get the schema of "customers" resource
 try
