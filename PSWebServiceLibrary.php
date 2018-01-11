@@ -45,7 +45,7 @@ class PrestaShopWebservice
 	protected $version;
 
 	/** @var array compatible versions of PrestaShop Webservice */
-	const psCompatibleVersionsMin = '1.4.0.0';
+	const psCompatibleVersionsMin = '1.6.0.0';
 	const psCompatibleVersionsMax = '1.7.99.99';
 
 	/**
@@ -331,8 +331,8 @@ class PrestaShopWebservice
                 $url .= '?'.http_build_query($url_params);
             
             $outputFormat =
-                (isset($params['output_format']) === true)
-                ? $params['output_format']
+                (isset($options['output_format']) === true)
+                ? $options['output_format']
                 : 'XML';
 
 		}
@@ -401,8 +401,8 @@ class PrestaShopWebservice
                 $url .= '&id_group_shop='.$options['id_group_shop'];
             
             $outputFormat =
-                (isset($params['output_format']) === true)
-                ? $params['output_format']
+                (isset($options['output_format']) === true)
+                ? $options['output_format']
                 : 'XML';
 		}
 		else
