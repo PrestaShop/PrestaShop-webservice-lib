@@ -241,16 +241,15 @@ class PrestaShopWebservice
 	 */
 	protected function parseJSON($response)
 	{
-		if ($response != '')
-		{
+		if ($response != '') {
 			if (json_decode ($response, true)) {
                 return json_decode ($response, true);
             } else {
-                throw new PrestaShopWebserviceException('Error when parse json to array');
+                return $response;
             }
-		}
-		else
-			throw new PrestaShopWebserviceException('HTTP response is empty');
+		} else {
+            throw new PrestaShopWebserviceException('HTTP response is empty');
+        }
 	}
 
 	/**
