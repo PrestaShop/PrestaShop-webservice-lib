@@ -239,7 +239,8 @@ class PrestaShopWebservice
     protected function parseJSON($response)
     {
         if ($response != '') {
-            if (json_decode($response, true)) {
+            json_decode($response, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
                 return json_decode($response, true);
             } else {
                 throw new PrestaShopWebserviceException('Error when parse json to array');
