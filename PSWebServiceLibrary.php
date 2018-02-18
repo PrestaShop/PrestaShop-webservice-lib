@@ -67,6 +67,7 @@ class PrestaShopWebservice
 	 * @param string $url Root URL for the shop
 	 * @param string $key Authentification key
 	 * @param mixed $debug Debug mode Activated (true) or deactivated (false)
+	 * @throws PrestaShopWebserviceException
 	*/
 	function __construct($url, $key, $debug = true) {
 		if (!extension_loaded('curl'))
@@ -80,6 +81,7 @@ class PrestaShopWebservice
 	/**
 	 * Take the status code and throw an exception if the server didn't return 200 or 201 code
 	 * @param int $status_code Status code of an HTTP return
+	 * @throws PrestaShopWebserviceException
 	 */
 	protected function checkStatusCode($status_code)
 	{
@@ -101,6 +103,7 @@ class PrestaShopWebservice
 	 * @param string $url Resource name
 	 * @param mixed $curl_params CURL parameters (sent to curl_set_opt)
 	 * @return array status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	protected function executeRequest($url, $curl_params = array())
 	{
@@ -192,6 +195,7 @@ class PrestaShopWebservice
 	 * Load XML from string. Can throw exception
 	 * @param string $response String from a CURL response
 	 * @return SimpleXMLElement status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	protected function parseXML($response)
 	{
@@ -220,6 +224,7 @@ class PrestaShopWebservice
 	 * Examples are given in the tutorial</p>
 	 * @param array $options
 	 * @return SimpleXMLElement status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function add($options)
 	{
@@ -269,6 +274,7 @@ class PrestaShopWebservice
 	 * </code>
 	 * @param array $options Array representing resource to get.
 	 * @return SimpleXMLElement status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function get($options)
 	{
@@ -303,6 +309,7 @@ class PrestaShopWebservice
 	 *
 	 * @param array $options Array representing resource for head request.
 	 * @return SimpleXMLElement status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function head($options)
 	{
@@ -329,6 +336,7 @@ class PrestaShopWebservice
 		self::checkStatusCode($request['status_code']);// check the response validity
 		return $request['header'];
 	}
+
 	/**
 	 * Edit (PUT) a resource
 	 * <p>Unique parameter must take : <br><br>
@@ -337,6 +345,8 @@ class PrestaShopWebservice
 	 * 'putXml' => Modified XML string of a resource<br><br>
 	 * Examples are given in the tutorial</p>
 	 * @param array $options Array representing resource to edit.
+	 * @return SimpleXMLElement
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function edit($options)
 	{
@@ -382,6 +392,8 @@ class PrestaShopWebservice
 	 * ?>
 	 * </code>
 	 * @param array $options Array representing resource to delete.
+	 * @return bool
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function delete($options)
 	{
