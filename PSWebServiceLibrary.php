@@ -292,7 +292,7 @@ class PrestaShopWebservice
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');
 
-		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
+		$request = self::executeRequest(trim($url), array(CURLOPT_CUSTOMREQUEST => 'GET'));
 
 		self::checkStatusCode($request['status_code']);// check the response validity
 		return self::parseXML($request['response']);
