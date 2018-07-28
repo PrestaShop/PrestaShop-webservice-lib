@@ -281,7 +281,7 @@ class PrestaShopWebservice
 			if (isset($options['id']))
 				$url .= '/'.$options['id'];
 
-			$params = array('filter', 'display', 'sort', 'limit', 'id_shop', 'id_group_shop');
+			$params = array('filter', 'display', 'sort', 'limit', 'id_shop', 'id_group_shop', 'output_format');
 			foreach ($params as $p)
 				foreach ($options as $k => $o)
 					if (strpos($k, $p) !== false)
@@ -295,7 +295,12 @@ class PrestaShopWebservice
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
 
 		self::checkStatusCode($request['status_code']);// check the response validity
-		return self::parseXML($request['response']);
+
+		if (!isset($options['output_format']) || $options['output_format']!=='JSON') {
+          return self::parseXML($request['response']);
+        } else {
+          return json_decode($request['response']);
+        }
 	}
 
 	/**
