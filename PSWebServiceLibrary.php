@@ -285,13 +285,15 @@ class PrestaShopWebservice
 			foreach ($params as $p)
 				foreach ($options as $k => $o)
 					if (strpos($k, $p) !== false)
-						$url_params[$k] = $options[$k];
+                        $url_params[$k] = $options[$k];
+            $url_params["ws_key"] = $this->key;
 			if (count($url_params) > 0)
 				$url .= '?'.http_build_query($url_params);
 		}
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');
 
+        
 		$request = self::executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
 
 		self::checkStatusCode($request['status_code']);// check the response validity
