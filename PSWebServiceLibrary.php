@@ -285,8 +285,8 @@ class PrestaShopWebservice
 			foreach ($params as $p)
 				foreach ($options as $k => $o)
 					if (strpos($k, $p) !== false)
-                        $url_params[$k] = $options[$k];
-            $url_params["ws_key"] = $this->key;
+                        			$url_params[$k] = $options[$k];
+            		$url_params["ws_key"] = $this->key;
 			if (count($url_params) > 0)
 				$url .= '?'.http_build_query($url_params);
 		}
