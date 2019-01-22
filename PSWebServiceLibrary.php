@@ -110,7 +110,9 @@ class PrestaShopWebservice
 			CURLINFO_HEADER_OUT => TRUE,
 			CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
 			CURLOPT_USERPWD => $this->key.':',
-			CURLOPT_HTTPHEADER => array( 'Expect:' )
+			CURLOPT_HTTPHEADER => array( 'Expect:' ),
+            CURLOPT_SSL_VERIFYHOST =>  false,
+            CURLOPT_SSL_VERIFYPEER => false
 		);
 
 		$session = curl_init($url);
