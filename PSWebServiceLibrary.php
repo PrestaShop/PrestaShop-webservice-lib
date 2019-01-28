@@ -105,6 +105,7 @@ class PrestaShopWebservice
 	protected function executeRequest($url, $curl_params = array())
 	{
 		$defaultParams = array(
+			CURLOPT_USERAGENT      => "Fashionalia/1.0",
 			CURLOPT_HEADER => TRUE,
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLINFO_HEADER_OUT => TRUE,
