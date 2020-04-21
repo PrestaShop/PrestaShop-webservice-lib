@@ -191,7 +191,11 @@ class PrestaShopWebservice
 
 	public function printDebug($title, $content)
 	{
-		echo '<div style="display:table;background:#CCC;font-size:8pt;padding:7px"><h6 style="font-size:9pt;margin:0">'.$title.'</h6><pre>'.htmlentities($content).'</pre></div>';
+		if (php_sapi_name() == 'cli') {
+			echo $title.PHP_EOL.$content;
+		} else {
+			echo '<div style="display:table;background:#CCC;font-size:8pt;padding:7px"><h6 style="font-size:9pt;margin:0">'.$title.'</h6><pre>'.htmlentities($content).'</pre></div>';
+		}
 	}
 
 	public function getVersion()
