@@ -96,13 +96,12 @@ class PrestaShopWebservice
 			default: throw new PrestaShopWebserviceException('This call to PrestaShop Web Services returned an unexpected HTTP status of:' . $status_code);
 		}
 	}
+	
 	/**
-	 * Handles a CURL request to PrestaShop Webservice. Can throw exception.
-	 * @param string $url Resource name
-	 * @param mixed $curl_params CURL parameters (sent to curl_set_opt)
-	 * @return array status_code, response
+	 * Provides default parameters for the curl connection(s)
+	 * @return array Default parameters for curl connection(s)
 	 */
-	protected function executeRequest($url, $curl_params = array())
+	protected function getCurlDefaultParams()
 	{
 		$defaultParams = array(
 			CURLOPT_HEADER => TRUE,
@@ -112,6 +111,18 @@ class PrestaShopWebservice
 			CURLOPT_USERPWD => $this->key.':',
 			CURLOPT_HTTPHEADER => array( 'Expect:' )
 		);
+		return $defaultParams;
+	}
+	
+	/**
+	 * Handles a CURL request to PrestaShop Webservice. Can throw exception.
+	 * @param string $url Resource name
+	 * @param mixed $curl_params CURL parameters (sent to curl_set_opt)
+	 * @return array status_code, response
+	 */
+	protected function executeRequest($url, $curl_params = array())
+	{
+		$defaultParams = $this->getCurlDefaultParams();
 
 		$session = curl_init($url);
 
