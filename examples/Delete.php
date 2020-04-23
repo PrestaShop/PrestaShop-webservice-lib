@@ -1,7 +1,7 @@
 <html><head><title>CRUD Tutorial - Delete example</title></head><body>
 <?php
 /*
-* 2007-2013 PrestaShop
+* 2007-2020 PrestaShop SA and Contributors
 *
 * NOTICE OF LICENSE
 *
@@ -20,7 +20,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2013 PrestaShop SA
+*  @copyright  2007-2020 PrestaShop SA
 *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 * PrestaShop Webservice Library
