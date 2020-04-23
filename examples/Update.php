@@ -31,7 +31,7 @@
 define('DEBUG', true);
 define('PS_SHOP_PATH', 'http://www.myshop.com/');
 define('PS_WS_AUTH_KEY', 'VIVELADIVISIONMOBILEDEPRESTASHOP');
-require_once('./PSWebServiceLibrary.php');
+require_once('../PSWebServiceLibrary.php');
 
 // First : We always get the customer's list or a specific one
 try
