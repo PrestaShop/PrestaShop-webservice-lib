@@ -1,18 +1,22 @@
 {
-    "name": "prestashop/prestashop-webservice-lib",
-    "description": "PrestaShop Webservice access library",
-    "license": "OSL-3.0",
-    "authors": [
-        {
-            "name": "PrestaShop SA",
-            "email": "contact@prestashop.com"
-        }
-    ],
-    "autoload": {
-        "classmap": ["PSWebServiceLibrary.php"]
-    },
-    "require": {
-        "php": ">= 5.3.0",
-        "ext-curl": "*"
+  "name": "prestashop/prestashop-webservice-lib",
+  "description": "PrestaShop Webservice access library",
+  "license": "OSL-3.0",
+  "authors": [
+    {
+      "name": "PrestaShop SA",
+      "email": "contact@prestashop.com"
     }
+  ],
+  "autoload": {
+    "classmap": [
+      "PSWebServiceLibrary.php"
+    ]
+  },
+  "require": {
+    "php": ">= 5.3.0",
+    "ext-curl": "*",
+    "ext-libxml": "*",
+    "ext-simplexml": "*"
+  }
 }
