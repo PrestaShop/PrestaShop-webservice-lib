@@ -212,6 +212,7 @@ class PrestaShopWebservice
 	 * @param string $response String from a CURL response
 	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	protected function parseXML($response)
 	{
@@ -241,6 +242,7 @@ class PrestaShopWebservice
 	 * @param array $options
 	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function add($options)
 	{
@@ -291,6 +293,7 @@ class PrestaShopWebservice
 	 * @param array $options Array representing resource to get.
 	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function get($options)
 	{
@@ -326,6 +329,7 @@ class PrestaShopWebservice
 	 * @param array $options Array representing resource for head request.
 	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement status_code, response
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function head($options)
 	{
@@ -352,6 +356,7 @@ class PrestaShopWebservice
 		$this->checkStatusCode($request['status_code']);// check the response validity
 		return $request['header'];
 	}
+
 	/**
 	 * Edit (PUT) a resource
 	 * <p>Unique parameter must take : <br><br>
@@ -360,8 +365,8 @@ class PrestaShopWebservice
 	 * 'putXml' => Modified XML string of a resource<br><br>
 	 * Examples are given in the tutorial</p>
 	 * @param array $options Array representing resource to edit.
-	 * @throws PrestaShopWebserviceException
 	 * @return SimpleXMLElement
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function edit($options)
 	{
@@ -407,8 +412,8 @@ class PrestaShopWebservice
 	 * ?>
 	 * </code>
 	 * @param array $options Array representing resource to delete.
-	 * @throws PrestaShopWebserviceException
 	 * @return bool
+	 * @throws PrestaShopWebserviceException
 	 */
 	public function delete($options)
 	{
