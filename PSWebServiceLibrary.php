@@ -35,7 +35,7 @@ class PrestaShopWebservice
     /** @var string Shop URL */
     protected $url;
 
-    /** @var string Authentification key */
+    /** @var string Authentication key */
     protected $key;
 
     /** @var boolean is debug activated */
@@ -66,7 +66,7 @@ class PrestaShopWebservice
      * </code>
      *
      * @param string $url Root URL for the shop
-     * @param string $key Authentification key
+     * @param string $key Authentication key
      * @param mixed $debug Debug mode Activated (true) or deactivated (false)
      *
      * @throws PrestaShopWebserviceException if curl is not loaded
