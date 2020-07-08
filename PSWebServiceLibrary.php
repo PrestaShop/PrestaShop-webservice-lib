@@ -420,9 +420,7 @@ class PrestaShopWebservice
     public function edit($options)
     {
         $xml = '';
-        if (isset($options['url'])) {
-            $url = $options['url'];
-        } elseif ((isset($options['resource'], $options['id']) || isset($options['url'])) && $options['putXml']) {
+        if ((isset($options['resource'], $options['id']) || isset($options['url'])) && $options['putXml']) {
             $url = (isset($options['url']) ? $options['url'] :
                 $this->url . '/api/' . $options['resource'] . '/' . $options['id']);
             $xml = $options['putXml'];
