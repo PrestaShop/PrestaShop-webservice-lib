@@ -249,7 +249,6 @@ class PrestaShopWebservice
      *
      * @return SimpleXMLElement status_code, response
      * @throws PrestaShopWebserviceException
-     * @throws PrestaShopWebserviceException
      */
     protected function parseXML($response)
     {
@@ -331,7 +330,6 @@ class PrestaShopWebservice
      * @param array $options Array representing resource to get.
      *
      * @return SimpleXMLElement status_code, response
-     * @throws PrestaShopWebserviceException
      * @throws PrestaShopWebserviceException
      */
     public function get($options)
