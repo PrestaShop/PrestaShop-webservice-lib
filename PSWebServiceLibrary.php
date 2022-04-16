@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2021 PrestaShop SA and Contributors
+* 2007-2022 PrestaShop SA and Contributors
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to https://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2021 PrestaShop SA
+*  @copyright  2007-2022 PrestaShop SA
 *  @license    https://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 * PrestaShop Webservice Library
@@ -56,7 +56,7 @@ class PrestaShopWebservice
      * require_once('./PrestaShopWebservice.php');
      * try
      * {
-     *    $ws = new PrestaShopWebservice('http://mystore.com/', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ', false);
+     *    $ws = new PrestaShopWebservice('https://mystore.com/', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ', false);
      *    // Now we have a webservice object to play with
      * }
      * catch (PrestaShopWebserviceException $ex)
@@ -305,7 +305,7 @@ class PrestaShopWebservice
     /**
      * Retrieve (GET) a resource
      * <p>Unique parameter must take : <br><br>
-     * 'url' => Full URL for a GET request of Webservice (ex: http://mystore.com/api/customers/1/)<br>
+     * 'url' => Full URL for a GET request of Webservice (ex: https://mystore.com/api/customers/1/)<br>
      * OR<br>
      * 'resource' => Resource name,<br>
      * 'id' => ID of a resource you want to get<br><br>
@@ -315,7 +315,7 @@ class PrestaShopWebservice
      * require_once('./PrestaShopWebservice.php');
      * try
      * {
-     * $ws = new PrestaShopWebservice('http://mystore.com/', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ', false);
+     * $ws = new PrestaShopWebservice('https://mystore.com/', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ', false);
      * $xml = $ws->get(array('resource' => 'orders', 'id' => 1));
      *    // Here in $xml, a SimpleXMLElement object you can parse
      * foreach ($xml->children()->children() as $attName => $attValue)
@@ -450,7 +450,7 @@ class PrestaShopWebservice
      * require_once('./PrestaShopWebservice.php');
      * try
      * {
-     * $ws = new PrestaShopWebservice('http://mystore.com/', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ', false);
+     * $ws = new PrestaShopWebservice('https://mystore.com/', 'ZQ88PRJX5VWQHCWE4EE7SQ7HPNX00RAJ', false);
      * $xml = $ws->delete(array('resource' => 'orders', 'id' => 1));
      *    // Following code will not be executed if an exception is thrown.
      *    echo 'Successfully deleted.';
