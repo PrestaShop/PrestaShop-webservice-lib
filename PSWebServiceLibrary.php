@@ -92,35 +92,46 @@ class PrestaShopWebservice
      *
      * @throws PrestaShopWebserviceException if HTTP status code is not 200 or 201
      */
-    protected function checkStatusCode($status_code)
+    protected function checkStatusCode($request)
     {
-        $error_label = 'This call to PrestaShop Web Services failed and returned an HTTP status of %d. That means: %s.';
-        switch ($status_code) {
+        switch ($request['status_code']) {
             case 200:
             case 201:
                 break;
             case 204:
-                throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'No content'));
+                $error_message = 'No content';
                 break;
             case 400:
-                throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Bad Request'));
+                $error_message = 'Bad Request';
                 break;
             case 401:
-                throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Unauthorized'));
+                $error_message = 'Unauthorized';
                 break;
             case 404:
-                throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Not Found'));
+                $error_message = 'Not Found';
                 break;
             case 405:
-                throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Method Not Allowed'));
+                $error_message = 'Method Not Allowed';
                 break;
             case 500:
-                throw new PrestaShopWebserviceException(sprintf($error_label, $status_code, 'Internal Server Error'));
+                $error_message = 'Internal Server Error';
                 break;
             default:
                 throw new PrestaShopWebserviceException(
-                    'This call to PrestaShop Web Services returned an unexpected HTTP status of:' . $status_code
+                    'This call to PrestaShop Web Services returned an unexpected HTTP status of:' . $request['status_code']
                 );
+        }
+
+        if (!empty($error_message)) {
+            $response = $this->parseXML($request['response']);
+            $errors = $response->children()->children();
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    $error_message.= ' - (Code ' . $error->code . '): ' . $error->message;
+                }
+            }
+            $error_label = 'This call to PrestaShop Web Services failed and returned an HTTP status of %d. That means: %s.';
+            throw new PrestaShopWebserviceException(sprintf($error_label, $request['status_code'], $error_message));
         }
     }
 
@@ -137,6 +148,9 @@ class PrestaShopWebservice
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
             CURLOPT_USERPWD => $this->key . ':',
             CURLOPT_HTTPHEADER => array('Expect:'),
+			//CURLOPT_SSL_VERIFYPEER => false,
+			//CURLOPT_CAINFO => "PATH2CAINFO",
+			//CURLOPT_CAPATH => "PATH2CAPATH",
         );
         return $defaultParams;
     }
@@ -176,7 +190,7 @@ class PrestaShopWebservice
 
         $index = strpos($response, "\r\n\r\n");
         if ($index === false && $curl_params[CURLOPT_CUSTOMREQUEST] != 'HEAD') {
-            throw new PrestaShopWebserviceException('Bad HTTP response');
+            throw new PrestaShopWebserviceException('Bad HTTP response ' . $response . curl_error($session));
         }
 
         $header = substr($response, 0, $index);
@@ -298,7 +312,7 @@ class PrestaShopWebservice
         }
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'POST', CURLOPT_POSTFIELDS => $xml));
 
-        $this->checkStatusCode($request['status_code']);
+        $this->checkStatusCode($request);
         return $this->parseXML($request['response']);
     }
 
@@ -361,7 +375,8 @@ class PrestaShopWebservice
 
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
 
-        $this->checkStatusCode($request['status_code']);// check the response validity
+        $this->checkStatusCode($request);// check the response validity
+
         return $this->parseXML($request['response']);
     }
 
@@ -399,7 +414,7 @@ class PrestaShopWebservice
             throw new PrestaShopWebserviceException('Bad parameters given');
         }
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'HEAD', CURLOPT_NOBODY => true));
-        $this->checkStatusCode($request['status_code']);// check the response validity
+        $this->checkStatusCode($request);// check the response validity
         return $request['header'];
     }
 
@@ -436,7 +451,7 @@ class PrestaShopWebservice
         }
 
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'PUT', CURLOPT_POSTFIELDS => $xml));
-        $this->checkStatusCode($request['status_code']);// check the response validity
+        $this->checkStatusCode($request);// check the response validity
         return $this->parseXML($request['response']);
     }
 
@@ -487,7 +502,7 @@ class PrestaShopWebservice
         }
 
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
-        $this->checkStatusCode($request['status_code']);// check the response validity
+        $this->checkStatusCode($request);// check the response validity
         return true;
     }
 
