@@ -87,8 +87,12 @@ class PrestaShopWebservice
 
     /**
      * Take the status code and throw an exception if the server didn't return 200 or 201 code
+     * <p>Unique parameter must take : <br><br>
+     * 'status_code' => Status code of an HTTP return<br>
+     * 'response' => CURL response
+     * </p>
      *
-     * @param int $status_code Status code of an HTTP return
+     * @param array $request Response elements of CURL request
      *
      * @throws PrestaShopWebserviceException if HTTP status code is not 200 or 201
      */
@@ -125,7 +129,7 @@ class PrestaShopWebservice
         if (!empty($error_message)) {
             $response = $this->parseXML($request['response']);
             $errors = $response->children()->children();
-            if (count($errors) > 0) {
+            if ($errors && count($errors) > 0) {
                 foreach ($errors as $error) {
                     $error_message.= ' - (Code ' . $error->code . '): ' . $error->message;
                 }
@@ -148,9 +152,9 @@ class PrestaShopWebservice
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
             CURLOPT_USERPWD => $this->key . ':',
             CURLOPT_HTTPHEADER => array('Expect:'),
-			//CURLOPT_SSL_VERIFYPEER => false,
-			//CURLOPT_CAINFO => "PATH2CAINFO",
-			//CURLOPT_CAPATH => "PATH2CAPATH",
+            //CURLOPT_SSL_VERIFYPEER => false, // reminder, in dev environment sometimes self-signed certificates are used
+            //CURLOPT_CAINFO => "PATH2CAINFO", // ssl certificate chain checking
+            //CURLOPT_CAPATH => "PATH2CAPATH",
         );
         return $defaultParams;
     }
