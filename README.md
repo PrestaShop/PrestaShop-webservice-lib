@@ -7,7 +7,7 @@ This library allows you to perform requests to a PrestaShop instance using the [
 Install the library using composer:
 
 ```
-composer require prestashop/prestashop-webservice-lib
+composer require prestashop/prestashop-webservice-lib:dev-master
 ```
 
 ## Usage
