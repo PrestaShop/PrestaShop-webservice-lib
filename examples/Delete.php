@@ -50,13 +50,13 @@ if (isset($_GET['DeleteID']))
 		// If there's an error we throw an exception
 		echo 'Successfully deleted !<meta http-equiv="refresh" content="5"/>';
 	}
-	catch (PrestaShopWebserviceException $e)
+	catch (PrestaShopWebserviceException $exception)
 	{
 		// Here we are dealing with errors
-		$trace = $e->getTrace();
+		$trace = $exception->getTrace();
 		if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 		else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-		else echo 'Other error<br />'.$e->getMessage();
+		else echo 'Other error<br />'.$exception->getMessage();
 	}
 }
 else
@@ -69,10 +69,10 @@ else
 		$xml = $webService->get($opt);
 		$resources = $xml->children()->children();
 	}
-	catch (PrestaShopWebserviceException $e)
+	catch (PrestaShopWebserviceException $exception)
 	{
 		// Here we are dealing with errors
-		$trace = $e->getTrace();
+		$trace = $exception->getTrace();
 		if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 		else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
 		else echo 'Other error';

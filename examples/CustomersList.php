@@ -47,10 +47,10 @@ try
 	// Here we get the elements from children of customers markup "customer"
 	$resources = $xml->customers->children();
 }
-catch (PrestaShopWebserviceException $e)
+catch (PrestaShopWebserviceException $exception)
 {
 	// Here we are dealing with errors
-	$trace = $e->getTrace();
+	$trace = $exception->getTrace();
 	if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 	else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
 	else echo 'Other error';

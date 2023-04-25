@@ -44,13 +44,13 @@ try
 		$xml = $webService->get($opt);
 	$resources = $xml->children()->children();
 }
-catch (PrestaShopWebserviceException $e)
+catch (PrestaShopWebserviceException $exception)
 {
 	// Here we are dealing with errors
-	$trace = $e->getTrace();
+	$trace = $exception->getTrace();
 	if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 	else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-	else echo 'Other error<br />'.$e->getMessage();
+	else echo 'Other error<br />'.$exception->getMessage();
 }
 
 if (count($_POST) > 0)
@@ -70,13 +70,13 @@ if (count($_POST) > 0)
 			echo "Successfully added.";
 		}
 	}
-	catch (PrestaShopWebserviceException $ex)
+	catch (PrestaShopWebserviceException $exception)
 	{
 		// Here we are dealing with errors
-		$trace = $ex->getTrace();
+		$trace = $exception->getTrace();
 		if ($trace[0]['args'][0] == 404) echo 'Bad ID';
 		else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-		else echo 'Other error<br />'.$ex->getMessage();
+		else echo 'Other error<br />'.$exception->getMessage();
 	}
 }
 
