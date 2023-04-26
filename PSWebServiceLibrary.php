@@ -98,6 +98,8 @@ class PrestaShopWebservice
      */
     protected function checkStatusCode($request)
     {
+        @trigger_error(sprintf('Since prestashop/prestashop-webservice-lib 1fcf90ac2001839e94769381e7596aee45423ba7: The %s::checkStatusCode() method is deprecated and should not be used anymore.', __CLASS__), \E_USER_DEPRECATED);
+
         $this->assertStatusCode($request['status_code']);
     }
 
