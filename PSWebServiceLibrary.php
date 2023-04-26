@@ -566,7 +566,7 @@ class PrestaShopWebserviceMissingPreconditionException extends \BadFunctionCallE
     {
         return new self(
             strtr(
-                'Please activate the PHP extension \'%extension%\' to allow use of PrestaShop webservice library',
+                'Please activate the PHP extension "%extension%" to allow use of PrestaShop webservice library',
                 array(
                     '%extension%' => $extension,
                 )
