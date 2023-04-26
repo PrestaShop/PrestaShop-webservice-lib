@@ -93,14 +93,28 @@ class PrestaShopWebservice
      * @param array{status_code: string, response: string} $request Response elements of CURL request
      *
      * @throws PrestaShopWebserviceException if HTTP status code is not 200 or 201
+     *
+     * @deprecated in favor of the private method assertStatusCode
      */
     protected function checkStatusCode($request)
     {
         $this->assertStatusCode($request['status_code']);
     }
 
+    /**
+     * @param int $statusCode
+     *
+     * @return void
+     *
+     * @throws PrestaShopWebserviceException if HTTP status code is not 200 or 201
+     */
     private function assertStatusCode($statusCode)
     {
+        if ($statusCode === 200
+            || $statusCode === 201) {
+            return;
+        }
+
         switch ($statusCode) {
             case 100:
                 throw PrestaShopWebserviceStatusException::shouldNotReceive100ContinueStatus();
@@ -139,18 +153,12 @@ class PrestaShopWebservice
             case 429:
                 throw new PrestaShopWebserviceTooManyRequestsException();
         }
-        if ($statusCode >= 100 && $statusCode < 200
-            || $statusCode >= 202 && $statusCode < 300
-            || $statusCode >= 300 && $statusCode < 500
-            || $statusCode >= 600
-            || $statusCode < 100
-        ) {
-            throw new PrestaShopWebserviceClientException('This call to PrestaShop Web Services responded with a non-standard code or a code this client could not handle properly. This can come from your web server or reverse proxy configuration.', $statusCode);
-        }
 
         if ($statusCode >= 500 && $statusCode < 600) {
-            throw new PrestaShopWebserviceServerException('This call to PrestaShop Web Services responded with a status code indicating it is not available or under a too heavy load to process your request.', $statusCode);
+            throw PrestaShopWebserviceServerException::withFailingServer($statusCode);
         }
+
+        throw PrestaShopWebserviceClientException::withUnhandledStatus($statusCode);
     }
 
     /**
@@ -330,7 +338,7 @@ class PrestaShopWebservice
         }
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'POST', CURLOPT_POSTFIELDS => $xml));
 
-        $this->checkStatusCode($request);
+        $this->assertStatusCode($request['status_code']);
         return $this->parseXML($request['response']);
     }
 
@@ -393,7 +401,7 @@ class PrestaShopWebservice
 
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
 
-        $this->checkStatusCode($request);// check the response validity
+        $this->assertStatusCode($request['status_code']);// check the response validity
 
         return $this->parseXML($request['response']);
     }
@@ -432,7 +440,7 @@ class PrestaShopWebservice
             throw PrestaShopWebserviceBadParametersException::badParameters();
         }
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'HEAD', CURLOPT_NOBODY => true));
-        $this->checkStatusCode($request);// check the response validity
+        $this->assertStatusCode($request['status_code']);// check the response validity
         return $request['header'];
     }
 
@@ -469,7 +477,7 @@ class PrestaShopWebservice
         }
 
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'PUT', CURLOPT_POSTFIELDS => $xml));
-        $this->checkStatusCode($request);// check the response validity
+        $this->assertStatusCode($request['status_code']);// check the response validity
         return $this->parseXML($request['response']);
     }
 
@@ -520,7 +528,7 @@ class PrestaShopWebservice
         }
 
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
-        $this->checkStatusCode($request);// check the response validity
+        $this->assertStatusCode($request['status_code']);// check the response validity
         return true;
     }
 
@@ -546,7 +554,7 @@ interface PrestaShopWebserviceException extends \Throwable
 class PrestaShopWebserviceBadParametersException extends \RuntimeException implements PrestaShopWebserviceException {
     public static function badParameters($previous = null)
     {
-        return new self('Bad parameters given', $previous);
+        return new self('Bad parameters given', 0, $previous);
     }
 }
 
@@ -563,6 +571,7 @@ class PrestaShopWebserviceMissingPreconditionException extends \BadFunctionCallE
                     '%extension%' => $extension,
                 )
             ),
+            0,
             $previous
         );
     }
@@ -766,9 +775,19 @@ class PrestaShopWebserviceStatusException extends \RuntimeException implements P
 /**
  * @package PrestaShopWebservice
  */
-class PrestaShopWebserviceClientException extends \RuntimeException implements PrestaShopWebserviceException {}
+class PrestaShopWebserviceClientException extends \RuntimeException implements PrestaShopWebserviceException {
+    public static function withUnhandledStatus($statusCode, $previous = null)
+    {
+        return new self('This call to PrestaShop Web Services responded with a non-standard code or a code this client could not handle properly. This can come from your web server or reverse proxy configuration.', $statusCode, $previous);
+    }
+}
 
 /**
  * @package PrestaShopWebservice
  */
-class PrestaShopWebserviceServerException extends \RuntimeException implements PrestaShopWebserviceException {}
+class PrestaShopWebserviceServerException extends \RuntimeException implements PrestaShopWebserviceException {
+    public static function withFailingServer($statusCode, $previous = null)
+    {
+        return new self('This call to PrestaShop Web Services responded with a status code indicating it is not available or under a too heavy load to process your request.', $statusCode, $previous);
+    }
+}
