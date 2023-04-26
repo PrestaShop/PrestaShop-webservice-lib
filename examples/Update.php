@@ -44,14 +44,19 @@ try
 
     // Here we get the elements from children of customer markup which is children of prestashop root markup
     $resources = $xml->children()->children();
+
 } catch (PrestaShopWebserviceNotFoundException $exception) {
     echo 'Bad ID';
+    exit;
 } catch (PrestaShopWebserviceUnauthorizedException $exception) {
     echo 'Bad auth key';
+    exit;
 } catch (PrestaShopWebserviceForbiddenException $exception) {
     echo 'Not logged in';
+    exit;
 } catch (PrestaShopWebserviceException $exception) {
     echo 'Other error<br />'.$exception->getMessage();
+    exit;
 }
 
 // Second : We update the data and send it to the web service

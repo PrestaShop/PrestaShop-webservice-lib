@@ -46,12 +46,16 @@ try
 
 } catch (PrestaShopWebserviceNotFoundException $exception) {
     echo 'Bad ID';
+    exit;
 } catch (PrestaShopWebserviceUnauthorizedException $exception) {
     echo 'Bad auth key';
+    exit;
 } catch (PrestaShopWebserviceForbiddenException $exception) {
     echo 'Not logged in';
+    exit;
 } catch (PrestaShopWebserviceException $exception) {
     echo 'Other error<br />'.$exception->getMessage();
+    exit;
 }
 
 if (count($_POST) > 0)

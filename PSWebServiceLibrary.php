@@ -90,9 +90,11 @@ class PrestaShopWebservice
      * 'response' => CURL response
      * </p>
      *
-     * @param array{status_code: string, response: string} $request Response elements of CURL request
+     * @param array{status_code: int, response: string} $request Response elements of CURL request
      *
      * @throws PrestaShopWebserviceException if HTTP status code is not 200 or 201
+     *
+     * @return void
      *
      * @deprecated in favor of the private method assertStatusCode
      */
@@ -165,7 +167,7 @@ class PrestaShopWebservice
 
     /**
      * Provides default parameters for the curl connection(s)
-     * @return array Default parameters for curl connection(s)
+     * @return array<int, mixed> Default parameters for curl connection(s)
      */
     protected function getCurlDefaultParams()
     {
@@ -189,7 +191,7 @@ class PrestaShopWebservice
      * @param string $url Resource name
      * @param mixed $curl_params CURL parameters (sent to curl_set_opt)
      *
-     * @return array status_code, response, header
+     * @return array{status_code: int, response: string, header: string}
      *
      * @throws PrestaShopWebserviceException
      */
@@ -198,6 +200,9 @@ class PrestaShopWebservice
         $defaultParams = $this->getCurlDefaultParams();
 
         $session = curl_init($url);
+        if ($session === false) {
+            throw PrestaShopWebserviceClientException::curlSessionInitializationFailure();
+        }
 
         $curl_options = array();
         foreach ($defaultParams as $defkey => $defval) {
@@ -215,14 +220,21 @@ class PrestaShopWebservice
 
         curl_setopt_array($session, $curl_options);
         $response = curl_exec($session);
-
-        $index = strpos($response, "\r\n\r\n");
-        if ($index === false && $curl_params[CURLOPT_CUSTOMREQUEST] != 'HEAD') {
-            throw new PrestaShopWebserviceServerException('Bad HTTP response ' . $response . curl_error($session));
+        if (!is_string($response)) {
+            throw PrestaShopWebserviceClientException::curlRequestExecutionFailure();
         }
 
-        $header = substr($response, 0, $index);
-        $body = substr($response, $index + 4);
+        $index = strpos($response, "\r\n\r\n");
+        if ($curl_params[CURLOPT_CUSTOMREQUEST] === 'HEAD') {
+            $index = strlen($response);
+            $header = $response;
+            $body = '';
+        } else if ($index === false) {
+            throw PrestaShopWebserviceServerException::badResponseFormat(curl_error($session));
+        } else {
+            $header = substr($response, 0, $index);
+            $body = substr($response, $index + 4);
+        }
 
         $headerArrayTmp = explode("\n", $header);
 
@@ -267,6 +279,13 @@ class PrestaShopWebservice
         return array('status_code' => $status_code, 'response' => $body, 'header' => $header);
     }
 
+    /**
+     * @param string $title
+     *
+     * @param mixed $content
+     *
+     * @return void
+     */
     public function printDebug($title, $content)
     {
         if (php_sapi_name() == 'cli') {
@@ -280,6 +299,9 @@ class PrestaShopWebservice
         }
     }
 
+    /**
+     * @return string
+     */
     public function getVersion()
     {
         return $this->version;
@@ -299,7 +321,7 @@ class PrestaShopWebservice
             libxml_clear_errors();
             libxml_use_internal_errors(true);
             $xml = simplexml_load_string(trim($response), 'SimpleXMLElement', LIBXML_NOCDATA);
-            if (libxml_get_errors()) {
+            if (libxml_get_errors() || $xml === false) {
                 $msg = var_export(libxml_get_errors(), true);
                 libxml_clear_errors();
                 throw new PrestaShopWebserviceServerException('HTTP XML response is not parsable: ' . $msg);
@@ -317,15 +339,13 @@ class PrestaShopWebservice
      * 'postXml' => Full XML string to add resource<br><br>
      * Examples are given in the tutorial</p>
      *
-     * @param array $options
+     * @param array<string, string|int|array<int>> $options
      *
      * @return SimpleXMLElement status_code, response
      * @throws PrestaShopWebserviceException
      */
     public function add($options)
     {
-        $xml = '';
-
         if (isset($options['resource'], $options['postXml']) || isset($options['url'], $options['postXml'])) {
             $url = (isset($options['resource']) ? $this->url . '/api/' . $options['resource'] : $options['url']);
             $xml = $options['postXml'];
@@ -370,7 +390,7 @@ class PrestaShopWebservice
      * ?>
      * </code>
      *
-     * @param array $options Array representing resource to get.
+     * @param array<string, string|int|array<int>> $options Array representing resource to get.
      *
      * @return SimpleXMLElement status_code, response
      * @throws PrestaShopWebserviceException
@@ -411,10 +431,10 @@ class PrestaShopWebservice
     /**
      * Head method (HEAD) a resource
      *
-     * @param array $options Array representing resource for head request.
+     * @param array<string, string|int|array<int>> $options Array representing resource for head request.
      *
-     * @return SimpleXMLElement status_code, response
-     * @throws PrestaShopWebserviceException
+     * @return string
+     * @throws PrestaShopWebserviceBadParametersException
      */
     public function head($options)
     {
@@ -454,7 +474,7 @@ class PrestaShopWebservice
      * 'putXml' => Modified XML string of a resource<br><br>
      * Examples are given in the tutorial</p>
      *
-     * @param array $options Array representing resource to edit.
+     * @param array<string, string|int|array<int>> $options Array representing resource to edit.
      *
      * @return SimpleXMLElement
      * @throws PrestaShopWebserviceException
@@ -505,10 +525,11 @@ class PrestaShopWebservice
      * ?>
      * </code>
      *
-     * @param array $options Array representing resource to delete.
+     * @param array<string, string|int|array<int>> $options Array representing resource to delete.
      *
      * @return bool
-     * @throws PrestaShopWebserviceException
+     *
+     * @throws \PrestaShopWebserviceBadParametersException
      */
     public function delete($options)
     {
@@ -540,6 +561,14 @@ class PrestaShopWebservice
 if (!interface_exists('Throwable')) {
     interface Throwable
     {
+        public function getMessage();
+        public function getCode();
+        public function getFile();
+        public function getLine();
+        public function getTrace();
+        public function getTraceAsString();
+        public function getPrevious();
+        public function __toString();
     }
 }
 
@@ -554,6 +583,10 @@ interface PrestaShopWebserviceException extends \Throwable
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceBadParametersException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param ?\Throwable $previous
+     * @return PrestaShopWebserviceBadParametersException
+     */
     public static function badParameters($previous = null)
     {
         return new self('Bad parameters given', 0, $previous);
@@ -564,6 +597,11 @@ class PrestaShopWebserviceBadParametersException extends \RuntimeException imple
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceMissingPreconditionException extends \BadFunctionCallException implements PrestaShopWebserviceException {
+    /**
+     * @param string $extension
+     * @param ?\Throwable $previous
+     * @return PrestaShopWebserviceMissingPreconditionException
+     */
     public static function missingExtension($extension, $previous = null)
     {
         return new self(
@@ -583,6 +621,10 @@ class PrestaShopWebserviceMissingPreconditionException extends \BadFunctionCallE
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceBadRequestException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param ?\Throwable $previous
+     * @return self
+     */
     public function __construct($previous = null)
     {
         parent::__construct('Bad Request', 400, $previous);
@@ -593,6 +635,10 @@ class PrestaShopWebserviceBadRequestException extends \RuntimeException implemen
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceUnauthorizedException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param ?\Throwable $previous
+     * @return self
+     */
     public function __construct($previous = null)
     {
         parent::__construct('Unauthorized', 401, $previous);
@@ -603,6 +649,10 @@ class PrestaShopWebserviceUnauthorizedException extends \RuntimeException implem
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceForbiddenException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param ?\Throwable $previous
+     * @return self
+     */
     public function __construct($previous = null)
     {
         parent::__construct('Forbidden', 403, $previous);
@@ -613,6 +663,10 @@ class PrestaShopWebserviceForbiddenException extends \RuntimeException implement
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceNotFoundException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param \Throwable $previous
+     * @return self
+     */
     public  function __construct($previous = null)
     {
         parent::__construct('Not Found', 404, $previous);
@@ -623,6 +677,10 @@ class PrestaShopWebserviceNotFoundException extends \RuntimeException implements
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceMethodNotAllowedException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param ?\Throwable $previous
+     * @return self
+     */
     public function __construct($previous = null)
     {
         parent::__construct('Method Not Allowed', 405, $previous);
@@ -633,6 +691,10 @@ class PrestaShopWebserviceMethodNotAllowedException extends \RuntimeException im
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceTooManyRequestsException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param ?\Throwable $previous
+     * @return self
+     */
     public function __construct($previous = null)
     {
         parent::__construct('Too Many Requests', 429, $previous);
@@ -643,6 +705,10 @@ class PrestaShopWebserviceTooManyRequestsException extends \RuntimeException imp
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceNoContentException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param ?\Throwable $previous
+     * @return self
+     */
     public function __construct($previous = null)
     {
         parent::__construct('No Content', 204, $previous);
@@ -778,9 +844,32 @@ class PrestaShopWebserviceStatusException extends \RuntimeException implements P
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceClientException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param int $statusCode
+     * @param ?\Throwable $previous
+     * @return self
+     */
     public static function withUnhandledStatus($statusCode, $previous = null)
     {
         return new self('This call to PrestaShop Web Services responded with a non-standard code or a code this client could not handle properly. This can come from your web server or reverse proxy configuration.', $statusCode, $previous);
+    }
+
+    /**
+     * @param ?\Throwable $previous
+     * @return self
+     */
+    public static function curlSessionInitializationFailure($previous = null)
+    {
+        return new self('The CURL session could not be initialized.', 0, $previous);
+    }
+
+    /**
+     * @param ?\Throwable $previous
+     * @return self
+     */
+    public static function curlRequestExecutionFailure($previous = null)
+    {
+        return new self('The CURL request could not be executed.', 0, $previous);
     }
 }
 
@@ -788,8 +877,23 @@ class PrestaShopWebserviceClientException extends \RuntimeException implements P
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceServerException extends \RuntimeException implements PrestaShopWebserviceException {
+    /**
+     * @param int $statusCode
+     * @param ?\Throwable $previous
+     * @return self
+     */
     public static function withFailingServer($statusCode, $previous = null)
     {
         return new self('This call to PrestaShop Web Services responded with a status code indicating it is not available or under a too heavy load to process your request.', $statusCode, $previous);
+    }
+
+    /**
+     * @param string $errorMessage
+     * @param ?\Throwable $previous
+     * @return self
+     */
+    public static function badResponseFormat($errorMessage, $previous = null)
+    {
+        return new self('Bad HTTP response, the response format is invalid: '. $errorMessage, 0, $previous);
     }
 }
