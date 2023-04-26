@@ -544,7 +544,7 @@ interface PrestaShopWebserviceException extends \Throwable
  * @package PrestaShopWebservice
  */
 class PrestaShopWebserviceBadParametersException extends \RuntimeException implements PrestaShopWebserviceException {
-    public static function badParameters($response, $previous = null)
+    public static function badParameters($previous = null)
     {
         return new self('Bad parameters given', $previous);
     }
