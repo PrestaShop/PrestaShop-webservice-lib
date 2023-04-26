@@ -49,15 +49,15 @@ if (isset($_GET['DeleteID']))
 		$webService->delete(array('resource' => 'customers', 'id' => intval($_GET['DeleteID'])));
 		// If there's an error we throw an exception
 		echo 'Successfully deleted !<meta http-equiv="refresh" content="5"/>';
-	}
-	catch (PrestaShopWebserviceException $exception)
-	{
-		// Here we are dealing with errors
-		$trace = $exception->getTrace();
-		if ($trace[0]['args'][0] == 404) echo 'Bad ID';
-		else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-		else echo 'Other error<br />'.$exception->getMessage();
-	}
+    } catch (PrestaShopWebserviceNotFoundException $exception) {
+        echo 'Bad ID';
+    } catch (PrestaShopWebserviceUnauthorizedException $exception) {
+        echo 'Bad auth key';
+    } catch (PrestaShopWebserviceForbiddenException $exception) {
+        echo 'Not logged in';
+    } catch (PrestaShopWebserviceException $exception) {
+        echo 'Other error<br />'.$exception->getMessage();
+    }
 }
 else
 {
@@ -68,15 +68,15 @@ else
 		$opt = array('resource' => 'customers');
 		$xml = $webService->get($opt);
 		$resources = $xml->children()->children();
-	}
-	catch (PrestaShopWebserviceException $exception)
-	{
-		// Here we are dealing with errors
-		$trace = $exception->getTrace();
-		if ($trace[0]['args'][0] == 404) echo 'Bad ID';
-		else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-		else echo 'Other error';
-	}
+    } catch (PrestaShopWebserviceNotFoundException $exception) {
+        echo 'Bad ID';
+    } catch (PrestaShopWebserviceUnauthorizedException $exception) {
+        echo 'Bad auth key';
+    } catch (PrestaShopWebserviceForbiddenException $exception) {
+        echo 'Not logged in';
+    } catch (PrestaShopWebserviceException $exception) {
+        echo 'Other error<br />'.$exception->getMessage();
+    }
 
 	echo '<h1>Customers List</h1>';
 	echo '<table border="5">';

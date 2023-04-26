@@ -48,14 +48,14 @@ try
 
 	// Here we get the elements from children of customer markup which is children of prestashop root markup
 	$resources = $xml->children()->children();
-}
-catch (PrestaShopWebserviceException $exception)
-{
-	// Here we are dealing with errors
-	$trace = $exception->getTrace();
-	if ($trace[0]['args'][0] == 404) echo 'Bad ID';
-	else if ($trace[0]['args'][0] == 401) echo 'Bad auth key';
-	else echo 'Other error<br />'.$exception->getMessage();
+} catch (PrestaShopWebserviceNotFoundException $exception) {
+    echo 'Bad ID';
+} catch (PrestaShopWebserviceUnauthorizedException $exception) {
+    echo 'Bad auth key';
+} catch (PrestaShopWebserviceForbiddenException $exception) {
+    echo 'Not logged in';
+} catch (PrestaShopWebserviceException $exception) {
+    echo 'Other error<br />'.$exception->getMessage();
 }
 
 // We set the Title
