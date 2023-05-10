@@ -125,7 +125,7 @@ class PrestaShopWebservice
         $errors = $this->parseXML($request['response'])->children()->children();
         if ($errors && count($errors) > 0) {
             foreach ($errors as $error) {
-                $errorMessage.= $error->message . '. ';
+                $errorMessage.= $error->message . ' - ';
             }
         }
 
@@ -334,7 +334,7 @@ class PrestaShopWebservice
             if (libxml_get_errors() || $xml === false) {
                 $msg = var_export(libxml_get_errors(), true);
                 libxml_clear_errors();
-                throw new PrestaShopWebserviceServerException('HTTP XML response is not parsable: ' . $msg);
+                throw new PrestaShopWebserviceServerException('HTTP XML response is not parsable: ' . $response);
             }
             return $xml;
         } else {
