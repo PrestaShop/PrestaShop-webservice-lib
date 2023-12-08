@@ -192,13 +192,13 @@ class PrestaShopWebservice
         curl_setopt_array($session, $curl_options);
         $response = curl_exec($session);
 
-        $index = strpos($response, "\r\n\r\n");
-        if ($index === false && $curl_params[CURLOPT_CUSTOMREQUEST] != 'HEAD') {
+        $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
+        if ($headerSize === false && $curl_params[CURLOPT_CUSTOMREQUEST] != 'HEAD') {
             throw new PrestaShopWebserviceException('Bad HTTP response ' . $response . curl_error($session));
         }
 
-        $header = substr($response, 0, $index);
-        $body = substr($response, $index + 4);
+        $header = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
 
         $headerArrayTmp = explode("\n", $header);
 
