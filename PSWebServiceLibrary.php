@@ -211,6 +211,10 @@ class PrestaShopWebservice
             }
         }
 
+        if (!array_key_exists('PSWS-Version', $headerArray) && array_key_exists('psws-version', $headerArray)) {
+            $headerArray['PSWS-Version'] = $headerArray['psws-version'];
+        }
+
         if (array_key_exists('PSWS-Version', $headerArray)) {
             $this->version = $headerArray['PSWS-Version'];
             if (
