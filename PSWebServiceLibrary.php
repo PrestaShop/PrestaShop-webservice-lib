@@ -152,6 +152,7 @@ class PrestaShopWebservice
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
             CURLOPT_USERPWD => $this->key . ':',
             CURLOPT_HTTPHEADER => array('Expect:'),
+            CURLOPT_USERAGENT => ['useragent'=>'Mozilla/5.0 (Android 13; Mobile; rv:120.0) Gecko/120.0 Firefox/120.0']
             //CURLOPT_SSL_VERIFYPEER => false, // reminder, in dev environment sometimes self-signed certificates are used
             //CURLOPT_CAINFO => "PATH2CAINFO", // ssl certificate chain checking
             //CURLOPT_CAPATH => "PATH2CAPATH",
