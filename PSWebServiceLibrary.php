@@ -173,6 +173,8 @@ class PrestaShopWebservice
     {
         $defaultParams = $this->getCurlDefaultParams();
 
+		$url .= '&ws_key=' . $this->key;
+
         $session = curl_init($url);
 
         $curl_options = array();
