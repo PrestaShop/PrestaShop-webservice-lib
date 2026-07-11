@@ -448,9 +448,7 @@ class PrestaShopWebservice
     public function edit($options)
     {
         $xml = '';
-        if (isset($options['url'])) {
-            $url = $options['url'];
-        } elseif ((isset($options['resource'], $options['id']) || isset($options['url'])) && $options['putXml']) {
+        if ((isset($options['resource'], $options['id']) || isset($options['url'])) && $options['putXml']) {
             $url = (isset($options['url']) ? $options['url'] :
                 $this->url . '/api/' . $options['resource'] . '/' . $options['id']);
             $xml = $options['putXml'];
@@ -460,6 +458,8 @@ class PrestaShopWebservice
             if (isset($options['id_group_shop'])) {
                 $url .= '&id_group_shop=' . $options['id_group_shop'];
             }
+        } elseif (isset($options['url'])) {
+            $url = $options['url'];
         } else {
             throw new PrestaShopWebserviceException('Bad parameters given');
         }
