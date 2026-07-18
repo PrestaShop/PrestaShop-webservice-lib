@@ -470,6 +470,43 @@ class PrestaShopWebservice
     }
 
     /**
+     * Update (PATCH) a resource
+     * <p>Unique parameter must take : <br><br>
+     * 'resource' => Resource name ,<br>
+     * 'id' => ID of a resource you want to edit,<br>
+     * 'patchXml' => Modified XML string of a resource<br><br>
+     * Examples are given in the tutorial</p>
+     *
+     * @param array $options Array representing resource to edit.
+     *
+     * @return SimpleXMLElement
+     * @throws PrestaShopWebserviceException
+     */
+    public function update($options)
+    {
+        $xml = '';
+        if (isset($options['url'])) {
+            $url = $options['url'];
+        } elseif ((isset($options['resource'], $options['id']) || isset($options['url'])) && $options['patchXml']) {
+            $url = (isset($options['url']) ? $options['url'] :
+                $this->url . '/api/' . $options['resource'] . '/' . $options['id']);
+            $xml = $options['patchXml'];
+            if (isset($options['id_shop'])) {
+                $url .= '&id_shop=' . $options['id_shop'];
+            }
+            if (isset($options['id_group_shop'])) {
+                $url .= '&id_group_shop=' . $options['id_group_shop'];
+            }
+        } else {
+            throw new PrestaShopWebserviceException('Bad parameters given');
+        }
+
+        $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'PATCH', CURLOPT_POSTFIELDS => $xml));
+        $this->checkStatusCode($request);// check the response validity
+        return $this->parseXML($request['response']);
+    }
+
+    /**
      * Delete (DELETE) a resource.
      * Unique parameter must take : <br><br>
      * 'resource' => Resource name<br>
