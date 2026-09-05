@@ -127,8 +127,16 @@ class PrestaShopWebservice
         }
 
         if (!empty($error_message)) {
-            $response = $this->parseXML($request['response']);
-            $errors = $response->children()->children();
+            $errors = array();
+            try {
+                $response = $this->parseXML($request['response']);
+                $errors = $response->children()->children();
+            } catch (PrestaShopWebserviceException $e) {
+                // WHY: an error body is not always the webservice's own XML. A 401 answered by the
+                // web server, a proxy error page or an empty body would otherwise replace the HTTP
+                // status - the actual diagnosis - with a libxml parse dump. Enriching the message
+                // with the returned errors is best effort; the status code is not.
+            }
             if ($errors && count($errors) > 0) {
                 foreach ($errors as $error) {
                     $error_message.= ' - (Code ' . $error->code . '): ' . $error->message;
@@ -289,6 +297,13 @@ class PrestaShopWebservice
                 $msg = var_export(libxml_get_errors(), true);
                 libxml_clear_errors();
                 throw new PrestaShopWebserviceException('HTTP XML response is not parsable: ' . $msg);
+            }
+            if ($xml === false) {
+                // WHY: a body that is not empty but trims to nothing - a blank line, a stray null byte -
+                // makes simplexml return false and record no libxml error, so the checks above let it
+                // through. Every caller then dereferences a bool. The method contract is an element or
+                // an exception, so the failure belongs here rather than in each caller.
+                throw new PrestaShopWebserviceException('HTTP XML response is not parsable');
             }
             return $xml;
         } else {
