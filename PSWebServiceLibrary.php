@@ -46,7 +46,14 @@ class PrestaShopWebservice
 
     /** @var string Minimal version of PrestaShop to use with this library */
     const psCompatibleVersionsMin = '1.4.0.0';
-    /** @var string Maximal version of PrestaShop to use with this library */
+    /**
+     * @var string Maximal version of PrestaShop to use with this library
+     *
+     * @deprecated No longer used. The library talks to a stable webservice contract, so a hard maximum only
+     *             locked working shops out until somebody remembered to edit this line: '8.2.0' rejected
+     *             every 8.2.x patch, and '9.2.0' rejects 9.2.1 and everything after it. Kept as a public
+     *             constant for backward compatibility.
+     */
     const psCompatibleVersionsMax = '9.2.0';
 
     /**
@@ -217,10 +224,10 @@ class PrestaShopWebservice
 
         if (array_key_exists('PSWS-Version', $headerArray)) {
             $this->version = $headerArray['PSWS-Version'];
-            if (
-                version_compare(PrestaShopWebservice::psCompatibleVersionsMin, $headerArray['PSWS-Version']) == 1 ||
-                version_compare(PrestaShopWebservice::psCompatibleVersionsMax, $headerArray['PSWS-Version']) == -1
-            ) {
+            // Only the lower bound is enforced. A shop newer than this library is not a reason to refuse to
+            // talk to it: the webservice contract is stable, and if something ever does break it has to be
+            // fixed here anyway, which an exception does not help with.
+            if (version_compare(PrestaShopWebservice::psCompatibleVersionsMin, $headerArray['PSWS-Version']) == 1) {
                 throw new PrestaShopWebserviceException(
                     'This library is not compatible with this version of PrestaShop. Please upgrade/downgrade this library'
                 );
