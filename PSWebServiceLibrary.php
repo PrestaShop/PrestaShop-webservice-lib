@@ -46,8 +46,8 @@ class PrestaShopWebservice
 
     /** @var string Minimal version of PrestaShop to use with this library */
     const psCompatibleVersionsMin = '1.4.0.0';
-    /** @var string Maximal version of PrestaShop to use with this library */
-    const psCompatibleVersionsMax = '9.2.0';
+    /** @var string Highest PrestaShop major version this library has been verified against */
+    const psCompatibleVersionsMax = '9';
 
     /**
      * PrestaShopWebservice constructor. Throw an exception when CURL is not installed/activated
@@ -217,12 +217,16 @@ class PrestaShopWebservice
 
         if (array_key_exists('PSWS-Version', $headerArray)) {
             $this->version = $headerArray['PSWS-Version'];
+            // Minor and patch releases only add fields to webservice resources, so they are accepted. A
+            // major release can rename or remove them, so it is refused until this library has been
+            // tested against it and the constant above raised.
             if (
                 version_compare(PrestaShopWebservice::psCompatibleVersionsMin, $headerArray['PSWS-Version']) == 1 ||
-                version_compare(PrestaShopWebservice::psCompatibleVersionsMax, $headerArray['PSWS-Version']) == -1
+                (int) $headerArray['PSWS-Version'] > (int) PrestaShopWebservice::psCompatibleVersionsMax
             ) {
                 throw new PrestaShopWebserviceException(
-                    'This library is not compatible with this version of PrestaShop. Please upgrade/downgrade this library'
+                    'This library is not compatible with this version of PrestaShop ('
+                    . $headerArray['PSWS-Version'] . '). Please upgrade/downgrade this library'
                 );
             }
         }
