@@ -96,7 +96,7 @@ class PrestaShopWebservice
      *
      * @throws PrestaShopWebserviceException if HTTP status code is not 200 or 201
      */
-    protected function checkStatusCode($request)
+    protected function checkStatusCode($request, $isJson = false)
     {
         switch ($request['status_code']) {
             case 200:
@@ -127,11 +127,22 @@ class PrestaShopWebservice
         }
 
         if (!empty($error_message)) {
-            $response = $this->parseXML($request['response']);
-            $errors = $response->children()->children();
-            if ($errors && count($errors) > 0) {
-                foreach ($errors as $error) {
-                    $error_message.= ' - (Code ' . $error->code . '): ' . $error->message;
+            if ($isJson) {
+                $errors = json_decode($request['response'], true);
+
+                if (isset($errors['errors']) && count($errors['errors']) > 0) {
+                    foreach ($errors['errors'] as $error) {
+                        $error_message.= ' - (Code ' . $error['code'] . '): ' . $error['message'];
+                    }
+                }
+            } else {
+                $response = $this->parseXML($request['response']);
+                $errors = $response->children()->children();
+
+                if ($errors && count($errors) > 0) {
+                    foreach ($errors as $error) {
+                        $error_message.= ' - (Code ' . $error->code . '): ' . $error->message;
+                    }
                 }
             }
             $error_label = 'This call to PrestaShop Web Services failed and returned an HTTP status of %d. That means: %s.';
@@ -358,7 +369,7 @@ class PrestaShopWebservice
      *
      * @param array $options Array representing resource to get.
      *
-     * @return SimpleXMLElement status_code, response
+     * @return SimpleXMLElement|string status_code, response
      * @throws PrestaShopWebserviceException
      */
     public function get($options)
@@ -372,7 +383,7 @@ class PrestaShopWebservice
                 $url .= '/' . $options['id'];
             }
 
-            $params = array('filter', 'display', 'sort', 'limit', 'id_shop', 'id_group_shop', 'schema', 'language', 'date', 'price');
+            $params = array('filter', 'display', 'sort', 'limit', 'id_shop', 'id_group_shop', 'schema', 'language', 'date', 'price', 'output_format');
             foreach ($params as $p) {
                 foreach ($options as $k => $o) {
                     if (strpos($k, $p) !== false) {
@@ -389,7 +400,13 @@ class PrestaShopWebservice
 
         $request = $this->executeRequest($url, array(CURLOPT_CUSTOMREQUEST => 'GET'));
 
-        $this->checkStatusCode($request);// check the response validity
+        $isJson = isset($options['output_format']) && $options['output_format'] === 'JSON';
+
+        $this->checkStatusCode($request, $isJson);// check the response validity
+
+        if ($isJson) {
+            return $request['response'];
+        }
 
         return $this->parseXML($request['response']);
     }
